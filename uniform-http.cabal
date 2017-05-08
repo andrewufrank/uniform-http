@@ -1,0 +1,71 @@
+name: uniform-http
+version: 0.0.1.3
+cabal-version: >=1.22
+build-type: Simple
+license: GPL
+license-file: GPL_3
+maintainer: Andrew U. Frank <andrewufrank@gmail.com>
+author: Andrew Frank
+category: Data, Text, Uniform
+synopsis: uniform text based operations to call http
+description: http using text
+
+source-repository head
+    type: git
+    location: https://github.com/andrewufrank/uniform-fileio.git
+
+library
+    build-depends: base
+            , bytestring
+--            directory >=1.3.0.0,
+--            filepath -any,
+--            posix-paths -any,
+--            pureMD5 -any,
+            ,text
+            , HTTP
+            , network-uri
+--            unix -any,
+--            pipes==4.3.2,
+-- for tests
+            , HTF, test-invariant
+--            QuickCheck,
+-- mine
+--            basics
+--                    stringConversion  -- moved to bascis
+            , uniform-strings
+            , uniform-error
+            , uniform-algebras
+
+    exposed-modules:
+             Uniform.HttpCall
+             Uniform.HttpGet
+    exposed: True
+    buildable: True
+    default-language: Haskell2010
+    hs-source-dirs: .
+    other-modules:
+
+--Test-Suite fileioTestAuto
+--    type:       exitcode-stdio-1.0
+--    main-is:    UniformFileIOTest.hs
+--    build-depends: base, HTF
+--        , uniform-fileio
+--        , uniform-strings
+--        , uniform-error
+--    default-language: Haskell2010
+--    hs-source-dirs: src
+
+--executable fileiotest
+--    build-depends:  base -any
+--        , HTF
+----                    bytestring -any, mtl,
+----                   text -any, utf8-string -any
+--       , uniform-strings
+--       , uniform-fileio
+--       , uniform-error
+----       , basics -- must not be included, gives dependency issue
+--    main-is: Main.hs
+--    buildable: True
+--    default-language: Haskell2010
+--    hs-source-dirs: src
+--    other-modules: TestingFileIO
