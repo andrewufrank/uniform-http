@@ -26,7 +26,7 @@ module Uniform.HttpGet (
 
 import           Uniform.Error
 import           Uniform.Strings
-import Uniform.HttpCall
+import Uniform.HttpCall   
 import Network.URI
 import           Test.Framework
 --
@@ -112,4 +112,3 @@ test_makePost7englishFail = do
 
 --test_parseURI = assertEqual "Just http://127.0.0.1:9001" (showT . NetURI.parseURI $ destTest9001)
 --test_parseURI_fail  = assertEqual "Nothing" (showT . NetURI.parseURI $ destTestFail)
-
