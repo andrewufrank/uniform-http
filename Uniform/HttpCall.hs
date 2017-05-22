@@ -7,6 +7,7 @@
 -- part of uniform (to use only text
 
 -----------------------------------------------------------------------------
+{-# OPTIONS_GHC -F -pgmF htfpp #-}
 
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
@@ -44,6 +45,7 @@ import qualified Network.HTTP          as Net
 import qualified Network.URI           as NetURI
 
 import Data.Text (take)
+import  Test.Framework
 
 --debugHTTP = False  no real change
 
@@ -122,13 +124,14 @@ _callHTTP6 debugHTTP request = do
 
 type URItext = Text
 
-makeHTTPrequest5 :: Http.RequestMethod -> URItext -> Text -> Text -> Net.Request ByteString
+makeHTTPrequest5 :: Http.RequestMethod -> NetURI.URI -> Text -> Text -> Net.Request ByteString
 -- a call to make a HTTP request with method to the URI (text)
 -- content type and body
 -- does not work for queries with no body
 makeHTTPrequest5 method uri contentType body =
-    Net.Request { Net.rqURI = fromJustNoteT ["makeHTTPrequest5 parseURI", showT uri]
-                        . NetURI.parseURI . t2s $ uri
+    Net.Request { Net.rqURI = uri
+--                    fromJustNoteT ["makeHTTPrequest5 parseURI", showT uri]
+--                        . NetURI.parseURI . t2s $ uri
              , Net.rqHeaders =   [hAccept, hLength , hContentType]
              , Net.rqMethod = method
              , Net.rqBody =   body'
@@ -144,7 +147,9 @@ makeHTTPrequest5 method uri contentType body =
         body' = E.encodeUtf8  body -- Net.urlEncode $ t2s body -- error 409 invalid path
         -- was just t2s body --
 
-
+--parseURI :: URItext -> Maybe NetURI.URI
+--parseURI uritext = -- fromJustNoteT ["makeHTTPrequest5 parseURI gives Nothing \n", showT uritext]
+--                          NetURI.parseURI . t2s $ uritext
 
 makeHTTPgetrequestNoBody :: URItext -> Text -> Text -> Net.Request String
 makeHTTPgetrequestNoBody uri argument text =
@@ -153,11 +158,11 @@ makeHTTPgetrequestNoBody uri argument text =
 
 
 
-parseURLchecked :: (MonadError m,  ErrorType m ~ Text) => Text -> m NetURI.URI
+parseURLchecked ::  Text -> ErrIO NetURI.URI
 parseURLchecked uri = do
     let  urx = NetURI.parseURI $ t2s uri
     case urx of
-            Nothing ->  fail . unwords $ ["URLerror" , "not a proper url " , t2s uri]
+            Nothing ->  throwErrorT ["URLerror" , "not a proper url " ,  uri]
             Just uriEnc -> return uriEnc
 
 urlEncodeVarsT:: [(Text,Text)] -> Text
@@ -166,8 +171,39 @@ urlEncodeVarsT = s2t . Net.urlEncodeVars . map (pair t2s)
 urlEncode :: Text -> Text
 urlEncode = s2t . Net.urlEncode . t2s
 
--- move TODO
+-- move TODO algebras
 fst3 (a,b,c) = a
 pair f (a,b) = (f a, f b)
+
+destTestFail = "127.0.0.1:9000"
+destTest9001 = "http://127.0.0.1:9001"
+
+test_parseURI = assertEqual "Just http://127.0.0.1:9001" (showT . NetURI.parseURI $ destTest9001)
+test_parseURI_fail  = assertEqual "Nothing" (showT . NetURI.parseURI $ destTestFail)
+
+uriTest = "http://127.0.0.1:9001/?annotators=tokenize%2Cssplit%2Cpos%2Clemma%2Cner%2Cparse&outputFormat=xml"
+
+mimetypeTest = "test/application"
+bodyTest = "This is a sentence."
+res5 = "POST http://127.0.0.1:9001/?annotators=tokenize%2Cssplit%2Cpos%2Clemma%2Cner%2\
+    \Cparse&outputFormat=xml HTTP/1.1\r\nAccept: */*\r\nContent-Length: 19\r\nContent-Type: \
+    \test/application\r\n\r\n"
+
+test_request5 = do
+    let uri1 = (NetURI.parseURI uriTest)  :: Maybe (NetURI.URI)
+    let req = makeHTTPrequest5 Net.POST (fromJustNote' "x" uri1) mimetypeTest bodyTest
+    assertEqual res5 (showT req)
+
+test_fromJust_givesError = assertEqual 1 (fromJustNote' "test_fromJust" (Nothing ::Maybe Int))
+
+test_request5_error = do
+    let uri1 = (NetURI.parseURI destTestFail)  :: Maybe (NetURI.URI)
+    let req = makeHTTPrequest5 Net.POST (fromJustNote' "x" uri1) mimetypeTest bodyTest
+    assertEqual res5 (showT req)
+
+-- todo error or strings
+fromJustNote' msg mb = case mb of
+                            Just r -> r
+                            Nothing -> errorT ["fromJust at ", msg , "with arg", showT mb]
 
 

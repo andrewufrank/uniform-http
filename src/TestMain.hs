@@ -21,6 +21,7 @@ module Main where
 
 import Uniform.Strings
 import           Test.Framework
+import {-@ HTF_TESTS @-} Uniform.HttpCall
 import {-@ HTF_TESTS @-} Uniform.HttpGet
 ------import {-@ HTF_TESTS @-} BuchCode.MarkupText
 ------import   {-@ HTF_TESTS @-} Lines2para.HandleLayout
