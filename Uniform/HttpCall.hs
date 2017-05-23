@@ -35,7 +35,7 @@ module Uniform.HttpCall (
 
 
 import           Uniform.Error
-import           Uniform.Strings
+import           Uniform.Pointless
 --
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Text.Encoding    as E
@@ -52,7 +52,7 @@ import  Test.Framework
 --bb2t :: ByteString -> Text
 --bb2t = fromJustNote "bytestring conversionm bb2t" . b2t
 
--- new simplified version with more error reported
+-- returns text, uses http6
 callHTTP7 :: Bool -> Http.Request ByteString -> ErrIO  Text
 -- | executes the HTTP call (e.g. simpleHTTP) and deals with first level of failure
 -- the return is a text, decoded the same way the makeNLPrequest was made
@@ -142,14 +142,9 @@ makeHTTPrequest5 method uri contentType body =
 --                                  "application/sparql-results+xml"
         hLength =  Net.mkHeader  Net.HdrContentLength $ show ( B.length body')
         hContentType = Net.mkHeader Net.HdrContentType  (t2s contentType)
---        body' = t2s . (E.decodeLatin1 . E.encodeUtf8)  $  body -- Net.urlEncode $ t2s body -- error 409 invalid path
---        body' = t2s  body -- Net.urlEncode $ t2s body -- error 409 invalid path
         body' = E.encodeUtf8  body -- Net.urlEncode $ t2s body -- error 409 invalid path
         -- was just t2s body --
 
---parseURI :: URItext -> Maybe NetURI.URI
---parseURI uritext = -- fromJustNoteT ["makeHTTPrequest5 parseURI gives Nothing \n", showT uritext]
---                          NetURI.parseURI . t2s $ uritext
 
 makeHTTPgetrequestNoBody :: URItext -> Text -> Text -> Net.Request String
 makeHTTPgetrequestNoBody uri argument text =
@@ -171,10 +166,6 @@ urlEncodeVarsT = s2t . Net.urlEncodeVars . map (pair t2s)
 urlEncode :: Text -> Text
 urlEncode = s2t . Net.urlEncode . t2s
 
--- move TODO algebras
-fst3 (a,b,c) = a
-pair f (a,b) = (f a, f b)
-
 destTestFail = "127.0.0.1:9000"
 destTest9001 = "http://127.0.0.1:9001"
 
@@ -191,19 +182,18 @@ res5 = "POST http://127.0.0.1:9001/?annotators=tokenize%2Cssplit%2Cpos%2Clemma%2
 
 test_request5 = do
     let uri1 = (NetURI.parseURI uriTest)  :: Maybe (NetURI.URI)
-    let req = makeHTTPrequest5 Net.POST (fromJustNote' "x" uri1) mimetypeTest bodyTest
+    let req = makeHTTPrequest5 Net.POST (fromJustNote "x" uri1) mimetypeTest bodyTest
     assertEqual res5 (showT req)
 
-test_fromJust_givesError = assertEqual 1 (fromJustNote' "test_fromJust" (Nothing ::Maybe Int))
+test_fromJust_givesError = assertEqual 1 (fromJustNote "test_fromJust" (Nothing ::Maybe Int))
 
 test_request5_error = do
     let uri1 = (NetURI.parseURI destTestFail)  :: Maybe (NetURI.URI)
-    let req = makeHTTPrequest5 Net.POST (fromJustNote' "x" uri1) mimetypeTest bodyTest
+    let req = makeHTTPrequest5 Net.POST (fromJustNote "x" uri1) mimetypeTest bodyTest
     assertEqual res5 (showT req)
 
 -- todo error or strings
-fromJustNote' msg mb = case mb of
-                            Just r -> r
-                            Nothing -> errorT ["fromJust at ", msg , "with arg", showT mb]
-
-
+-- fromJustNote'= fromJustNote
+-- fromJustNote' msg mb = case mb of
+--                             Just r -> r
+--                             Nothing -> errorT ["fromJust at ", msg , "with arg", showT mb]
