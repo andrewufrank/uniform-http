@@ -6,5 +6,4 @@ packages:
 - ../uniform-error
 - ../uniform-algebras
 extra-deps:
-- data-easy-0.7.0
 resolver: lts-8.15
