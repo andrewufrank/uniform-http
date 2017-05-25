@@ -49,13 +49,7 @@ makeHttpPost7 debugNLPrequest dest vars mimetype  body = do
         when debugNLPrequest $ putIOwords ["makeHttpPOST7 uri", showT uri]
         when debugNLPrequest $ putIOwords ["makeHttpPOST7 mimetype", mimetype]
         when debugNLPrequest $ putIOwords ["makeHttpPOST7 body", body ]
---        uriEnc <- parseURLchecked uritext  -- just testing
-                    -- seems not to do much
---        let muri = parseURI uritext
---        case muri of
---            Nothing -> throwErrorT ["makeHttpPOST7 - uri not ok", uritext]
---            Just uri -> do
---        let uri = uriEnc
+
         when debugNLPrequest $ putIOwords ["makeHttpPOST7 uri", showT uri]
         let req = makeHTTPrequest5 POST uri mimetype body
         when debugNLPrequest $ putIOwordsT ["makeHttpPOST7 request", showT req ]
@@ -99,9 +93,6 @@ forportTest :: URI
 forportTest = makeURI "http://127.0.0.1"
 
 uriTest = "http://127.0.0.1:9001/?annotators=tokenize%2Cssplit%2Cpos%2Clemma%2Cner%2Cparse&outputFormat=xml"
---uriTestFail = " 127.0.0.1:9001/?annotators=tokenize%2Cssplit%2Cpos%2Clemma%2Cner%2Cparse&outputFormat=xml"
---mimetypeTest = "test/application"
---bodyTest = "This is a sentence."
 res5 = "POST http://127.0.0.1:9001/?annotators=tokenize%2Cssplit%2Cpos%2Clemma%2Cner%2\
     \Cparse&outputFormat=xml HTTP/1.1\r\nAccept: */*\r\nContent-Length: 19\r\nContent-Type: \
     \test/application\r\n\r\n"

@@ -21,16 +21,7 @@
 
 module Uniform.HttpCall (
     module Uniform.HttpCall
---    callHTTP7
-----    , callHTTP6
---    , parseURLchecked
     , Net.RequestMethod (..)  -- for GET, POST
---    , makeHTTPrequest5
-----    , makeHTTPrequest6
---    , makeHTTPgetrequestNoBody
---    , urlEncode
---    , urlEncodeVarsT
---    , Http.RequestMethod (..)
             )  where
 
 
@@ -47,10 +38,6 @@ import qualified Network.URI           as NetURI
 import Data.Text (take)
 import  Test.Framework
 
---debugHTTP = False  no real change
-
---bb2t :: ByteString -> Text
---bb2t = fromJustNote "bytestring conversionm bb2t" . b2t
 
 -- returns text, uses http6
 callHTTP7 :: Bool -> Http.Request ByteString -> ErrIO  Text
@@ -63,7 +50,7 @@ callHTTP7 debugHTTP request = do
       return res2
 
 
--- new simplified version with more error reported
+-- simplified version with more error reported
 _callHTTP6 :: Bool -> Http.Request ByteString -> ErrIO  ByteString
 -- | executes the HTTP call (e.g. simpleHTTP) and deals with first level of failure
 -- the return is a bytstring to decode with the same encoding used for the call

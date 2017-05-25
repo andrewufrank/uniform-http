@@ -23,13 +23,6 @@ import Uniform.Strings
 import           Test.Framework
 import {-@ HTF_TESTS @-} Uniform.HttpCall
 import {-@ HTF_TESTS @-} Uniform.HttpGet
-------import {-@ HTF_TESTS @-} BuchCode.MarkupText
-------import   {-@ HTF_TESTS @-} Lines2para.HandleLayout
-------import   {-@ HTF_TESTS @-} Lines2para.Lines2ignore
---import   {-@ HTF_TESTS @-} Lines2para.Lines2para
---import   {-@ HTF_TESTS @-} Parser.ProduceLit
---import   {-@ HTF_TESTS @-} Parser.ProduceNLP   -- calls to NLP
-----import   {-@ HTF_TESTS @-} Parser.ConvertTaggerOutput
 
 main =  do
     putStrLn "Lit Text Test.hs:\n"
