@@ -42,10 +42,7 @@ makeHttpPost7 debugNLPrequest dest vars mimetype  body = do
         when debugNLPrequest $ putIOwords ["\twith \n", body]
         let  uri = if null vars then dest
                     else  makeAbsURI (showT dest <> "/?" <>  urlEncodeVarsT vars)
---                    [("annotators","tokenize,ssplit,pos,lemma,ner,parse")
---                    -- removed ,coref
---                    , ("outputFormat","xml")
---                    ]
+
         when debugNLPrequest $ putIOwords ["makeHttpPOST7 uri", showT uri]
         when debugNLPrequest $ putIOwords ["makeHttpPOST7 mimetype", mimetype]
         when debugNLPrequest $ putIOwords ["makeHttpPOST7 body", body ]

@@ -105,6 +105,7 @@ _callHTTP6 debugHTTP request = do
 
      `catchError` (\e -> do
              putIOwords ["callHTTP6 error caught 7",  e, "for request \n", showT request] -- " showT msg])
+             putIOwords ["callHTTP6 error caught 7",  "requestbody",  bb2t $ Net.rqBody request ] -- " showT msg])
              throwError e
                 )
 
