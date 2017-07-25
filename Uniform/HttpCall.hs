@@ -173,12 +173,12 @@ test_request5 = do
     let req = makeHTTPrequest5 Net.POST (fromJustNote "x" uri1) mimetypeTest bodyTest
     assertEqual res5 (showT req)
 
-test_fromJust_givesError = assertEqual 1 (fromJustNote "test_fromJust" (Nothing ::Maybe Int))
+--test_fromJust_givesError = assertEqual 1 (fromJustNote "test_fromJust" (Nothing ::Maybe Int))
 
-test_request5_error = do
-    let uri1 = (NetURI.parseURI destTestFail)  :: Maybe (NetURI.URI)
-    let req = makeHTTPrequest5 Net.POST (fromJustNote "x" uri1) mimetypeTest bodyTest
-    assertEqual res5 (showT req)
+--test_request5_error = do
+--    let uri1 = (NetURI.parseURI destTestFail)  :: Maybe (NetURI.URI)
+--    let req = makeHTTPrequest5 Net.POST (fromJustNote "x" uri1) mimetypeTest bodyTest
+--    assertEqual res5 (showT req)
 
 -- todo error or strings
 -- fromJustNote'= fromJustNote
