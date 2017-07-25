@@ -1,10 +1,12 @@
 
  -----------------------------------------------------------------------------
 --
--- Module      :  Store.RDFstore.HttpCall
+-- Module      :  Uniform.HttpCallWithConduit
 --
 -- | using http simple to sparql queries and to create requests
 -- part of uniform (to use only text
+-- uses the newer http-conduit module
+-- because teh old HTTP cannot do https
 
 -----------------------------------------------------------------------------
 {-# OPTIONS_GHC -F -pgmF htfpp #-}
@@ -19,40 +21,43 @@
 {-# LANGUAGE UndecidableInstances  #-}
 -- {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
-module Uniform.HttpCall (
-    module Uniform.HttpCall
-    , Net.RequestMethod (..)  -- for GET, POST
+module Uniform.HttpCallWithConduit (
+    module Uniform.HttpCallWithConduit
+    , Http.Request, Http.parseRequest, Http.parseRequest_
+--    , Net.RequestMethod (..)  -- for GET, POST
             )  where
 
 
 import           Uniform.Error
-import           Uniform.Pointless
+import           Uniform.Strings
 --
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Text.Encoding    as E
 --
-import qualified Network.HTTP          as Http
---import qualified Network.HTTP.Simple          as Http
---import qualified Network.HTTP.Simple          as Net
---import qualified Network.HTTP.Simple          as NetURI
-import qualified Network.HTTP          as Net
-import qualified Network.URI           as NetURI
+import qualified Network.HTTP.Simple          as Http
 
 import Data.Text (take)
 import  Test.Framework
 
+type Request2 = Http.Request
 
--- returns text, uses http6
-callHTTP7 :: Bool -> Http.Request ByteString -> ErrIO  Text
--- | executes the HTTP call (e.g. simpleHTTP) and deals with first level of failure
--- the return is a text, decoded the same way the makeNLPrequest was made
--- probably merge the two functions
-callHTTP7 debugHTTP request = do
-      res <-   _callHTTP6 debugHTTP request
-      let res2 = bb2t res
-      return res2
+callHTTP8get :: Bool -> Http.Request  -> ErrIO  Text
+-- call the http-conduit simple for a get
+-- see https://haskell-lang.org/library/http-client
+callHTTP8get debug uri = do
+    response <- callIO $  Http.httpLBS uri
+
+    putIOwords ["The status code was: " ,
+               showT (Http.getResponseStatusCode response)]
+    putIOwords [showT (Http.getResponseHeader "Content-Type" response)]
+--    L8.putStrLn $ getResponseBody response
+    let res = bb2t . bl2b . Http.getResponseBody $ response :: Text
+    -- stops if not an UTF8 encoded text
+    putIOwords ["callHTTP8get response: ", res]
+    return res
 
 
+{-
 -- simplified version with more error reported
 _callHTTP6 :: Bool -> Http.Request ByteString -> ErrIO  ByteString
 -- | executes the HTTP call (e.g. simpleHTTP) and deals with first level of failure
@@ -188,3 +193,4 @@ test_request5 = do
 -- fromJustNote' msg mb = case mb of
 --                             Just r -> r
 --                             Nothing -> errorT ["fromJust at ", msg , "with arg", showT mb]
+-}

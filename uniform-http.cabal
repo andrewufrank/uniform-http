@@ -19,6 +19,7 @@ library
             , bytestring
             ,text
             , HTTP
+            , http-conduit
             , network-uri
 -- for tests
             , HTF
@@ -30,6 +31,7 @@ library
 
     exposed-modules:
              Uniform.HttpCall
+             Uniform.HttpCallWithConduit
              Uniform.HttpGet
     exposed: True
     buildable: True
