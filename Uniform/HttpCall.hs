@@ -69,8 +69,10 @@ _callHTTP6 debugHTTP request = do
                         putIOwords ["callHTTP6 result is is", showT res1]
                     return res1
                  `catchError` \e -> do
-                             putIOwords ["callHTTP6 http.simpleHTTP error caught 3", showT e
+                             putIOwords ["callHTTP6 http.simpleHTTP error caught 3"
+                                    , showT e
                                     , "\n should not occur - caught by callIO ??"
+                                    , "\n may occur during warm-up of corenlp"
                                     , "\n note hint: replace localhost by 127.0.0.1"
                                     ,  "\n", showT request]
                              fail . unwords $  [ "callHTTP6 httperror 3", show e]
