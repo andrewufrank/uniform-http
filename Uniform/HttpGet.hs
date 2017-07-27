@@ -72,8 +72,8 @@ makeHttpGet7 debugNLPrequest dest vars mimetype  = do
 --        when debugNLPrequest $ putIOwords ["makeHttpPOST7 uri", showT uri]
 --        let req = makeHTTPrequest5 GET uri mimetype ""
 --        when debugNLPrequest $ putIOwordsT ["makeHttpPOST7 request", showT req ]
-        dest2 <- parseRequest . t2s $ dest
-        response <- callHTTP8get  False dest2  -- bool controls debug output
+--        dest2 <- parseRequest . t2s $ dest
+        response <- callHTTP8get  False dest  -- bool controls debug output
         when debugNLPrequest $ putIOwords ["makeHttpPOST7 response"
                                 ,  response, "from", showT dest ]
 

@@ -35,17 +35,22 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.Text.Encoding    as E
 --
 import qualified Network.HTTP.Simple          as Http
+import           Network.HTTP.Client          as Client
+import           Network.HTTP.Conduit         as Conduit
+--import           Network.HTTP.Client.TLS
+--import           Network.HTTP.Types.Status  (statusCode)
 
 import Data.Text (take)
 import  Test.Framework
 
 type Request2 = Http.Request
 
-callHTTP8get :: Bool -> Http.Request  -> ErrIO  Text
+callHTTP8get :: Bool -> Text  -> ErrIO  Text
 -- call the http-conduit simple for a get
 -- see https://haskell-lang.org/library/http-client
-callHTTP8get debug uri = do
-    response <- callIO $  Http.httpLBS uri
+callHTTP8get debug dest = do
+    req1 <- Http.parseRequest . t2s $ dest
+    response <- callIO $  Http.httpLBS req1
 
     putIOwords ["The status code was: " ,
                showT (Http.getResponseStatusCode response)]
@@ -56,6 +61,28 @@ callHTTP8get debug uri = do
     putIOwords ["callHTTP8get response: ", res]
     return res
 
+callHTTP8post :: Bool -> Text -> Text -> Text -> Text -> ErrIO Text
+-- post a body to the  url given as a type given
+--application/sparql-update
+callHTTP8post debug appType dest path txt = do
+    req1 <- Http.parseRequest . t2s $ dest
+    let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
+                $ Http.setRequestHeader "Content-Type" ["application/sparql-update"]
+                $ Http.setRequestMethod "POST"
+                $ Http.setRequestPath (t2b $ path)
+                req1
+----            }
+    when debug $ putIOwords ["callHTTP8post" , showT req2]
+    response <- callIO $  Http.httpLBS req2
+
+    when debug $ putIOwords ["callHTTP8post The status code was: " ,
+               showT (Http.getResponseStatusCode response)]
+    when debug $ putIOwords [showT (Http.getResponseHeader "Content-Type" response)]
+--    L8.putStrLn $ getResponseBody response
+    let res = bb2t . bl2b . Http.getResponseBody $ response :: Text
+    -- stops if not an UTF8 encoded text
+    when debug $ putIOwords ["callHTTP8post response: ", res]
+    return res
 
 {-
 -- simplified version with more error reported

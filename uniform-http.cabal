@@ -20,7 +20,10 @@ library
             ,text
             , HTTP
             , http-conduit
+            , http-client
+
             , network-uri
+
 -- for tests
             , HTF
             , test-invariant
