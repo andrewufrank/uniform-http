@@ -73,7 +73,7 @@ callHTTP8post debug appType dest path txt = do
 --                $ Conduit.ResponseTimeout 300000 -- msecs
 
                 req1
-                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
+--                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
 ----            }
     when True $ putIOwords ["callHTTP8post" , showT req2, "text length", showT length]
     res <- callIO $
