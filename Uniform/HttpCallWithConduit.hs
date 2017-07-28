@@ -65,13 +65,17 @@ callHTTP8post :: Bool -> Text -> Text -> Text -> Text -> ErrIO Text
 --application/sparql-update
 callHTTP8post debug appType dest path txt = do
     req1 <- Http.parseRequest . t2s $ dest
+    let length = lengthChar txt
     let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
                 $ Http.setRequestHeader "Content-Type" ["application/sparql-update"]
                 $ Http.setRequestMethod "POST"
-                $ Http.setRequestPath (t2b $ path)
+                $ Http.setRequestPath (t2b path)
+--                $ Conduit.ResponseTimeout 300000 -- msecs
+
                 req1
+                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
 ----            }
-    when True $ putIOwords ["callHTTP8post" , showT req2]
+    when True $ putIOwords ["callHTTP8post" , showT req2, "text length", showT length]
     res <- callIO $
         do
                  Http.httpLBS req2
