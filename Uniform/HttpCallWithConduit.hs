@@ -31,8 +31,8 @@ module Uniform.HttpCallWithConduit (
 import           Uniform.Error
 import           Uniform.Strings
 --
-import qualified Data.ByteString.Char8 as B
-import qualified Data.Text.Encoding    as E
+--import qualified Data.ByteString.Char8 as B
+--import qualified Data.Text.Encoding    as E
 --
 import qualified Network.HTTP.Simple          as Http
 import           Network.HTTP.Client          as Client
@@ -55,7 +55,6 @@ callHTTP8get debug dest = do
     putIOwords ["The status code was: " ,
                showT (Http.getResponseStatusCode response)]
     putIOwords [showT (Http.getResponseHeader "Content-Type" response)]
---    L8.putStrLn $ getResponseBody response
     let res = bb2t . bl2b . Http.getResponseBody $ response :: Text
     -- stops if not an UTF8 encoded text
     putIOwords ["callHTTP8get response: ", res]
@@ -72,17 +71,58 @@ callHTTP8post debug appType dest path txt = do
                 $ Http.setRequestPath (t2b $ path)
                 req1
 ----            }
-    when debug $ putIOwords ["callHTTP8post" , showT req2]
-    response <- callIO $  Http.httpLBS req2
+    when True $ putIOwords ["callHTTP8post" , showT req2]
+    res <- callIO $
+        do
+                 Http.httpLBS req2
+            `catchError` \e -> do
+                     putIOwords ["callHTTP8post  error caught 3", showT e
+                            , "\n should not occur - caught by callIO ??"
+                            , "\n note hint: replace localhost by 127.0.0.1"
+                            ,  "\n", showT req2]
+                     fail . unwords $  [ "callHTTP8post httperror 3", show e]
+                                             -- is in the IO monad, not ErrIO
 
-    when debug $ putIOwords ["callHTTP8post The status code was: " ,
-               showT (Http.getResponseStatusCode response)]
-    when debug $ putIOwords [showT (Http.getResponseHeader "Content-Type" response)]
---    L8.putStrLn $ getResponseBody response
-    let res = bb2t . bl2b . Http.getResponseBody $ response :: Text
+--    let debugHTTP = True
+--    when debugHTTP $ putIOwords ["callHTTP8post did not produce error"]
+--    case res of
+--         Left msg -> do
+--             putIOwords ["callHTTP8post reported error ", showT msg, "for request \n", showT req2]
+--             throwErrorT ["callHTTP8post http select 2", showT msg, "for request \n", showT req2]
+--         Right response -> do
+--             when debugHTTP $ putIOwords ["callHTTP8post produced response 1"]
+--             res3 <- callIO $ do
+--                         code1 <- Http.getResponseStatusCode res
+--                         when debugHTTP $ putIOwords ["callHTTP8post  getResponseCode 6", showT code1]
+--                         body1 <- Http.getResponseBody res
+--                         let body2 =  body1  -- change for 6
+--                         when debugHTTP $ putIOwords ["callHTTP8post  getResponseBody 6", bb2t body2]
+--                         if fst3 code1 == 2
+--                            then do
+--                                 when debugHTTP $ putIOwords ["callHTTP8post  return ok with body", showT code1, bb2t body2]
+--                                 return . Right $ body2 --
+----                                                   -- the result is parsed! $ unwords' [showT res, "with body", body2]
+--                            else do
+--                                 putIOwords ["callHTTP8post  return Left code", showT code1
+--                                                , "for request \n", showT request]
+--                                 return . Left . unwords $ ["callHTTP8post returns code", show  code1, bb2s body2
+--                                            , "for request \n", show  request]
+--                      `catchError` \e -> do
+--                         putIOwords ["callHTTP8post error in getResponseBody 5 100 char"
+--                                , Data.Text.take 100 . showT $ e, "for request \n", showT request]
+--                         return . Left . unwords $   [ "callHTTP8post httperror 5", show e
+--                                        , "for request \n", show  request]
+--             case res3 of
+--                Left msg2 -> throwError . s2t $ msg2
+--                Right b -> return (b ::ByteString)
+
+    let statusCode = Http.getResponseStatusCode res
+    when True $ putIOwords ["callHTTP8post The status code was: ", showT statusCode]
+    when True $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
+    let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
     -- stops if not an UTF8 encoded text
-    when debug $ putIOwords ["callHTTP8post response: ", res]
-    return res
+    when True $ putIOwords ["callHTTP8post response: ", res2]
+    return res2
 
 {-
 -- simplified version with more error reported
