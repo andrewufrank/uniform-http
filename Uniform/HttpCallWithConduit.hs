@@ -32,9 +32,6 @@ module Uniform.HttpCallWithConduit (
 import           Uniform.Error
 import           Uniform.Strings
 --
---import qualified Data.ByteString.Char8 as B
---import qualified Data.Text.Encoding    as E
---
 import qualified Network.HTTP.Simple          as Http
 import           Network.HTTP.Client          as Client
 import           Network.HTTP.Conduit         as Conduit
@@ -62,6 +59,33 @@ callHTTP8get debug dest = do
     putIOwords ["callHTTP8get response: ", res]
     return res
 
+--callHTTP9get :: Bool -> URI ->  Text  -> ErrIO  Text
+---- call the http-conduit with a query
+---- no body
+---- see https://haskell-lang.org/library/http-client
+--callHTTP9get debug dest = do
+--    req1 <- Http.parseRequest . show $ dest
+--    let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
+--                $ Http.setRequestHeader "Content-Type" ["application/sparql-update"]
+--                $ Http.setRequestMethod "POST"
+--                $ Http.setRequestPath (t2b path)
+----                $ Conduit.ResponseTimeout 300000 -- msecs
+--
+--                req1
+----                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
+------            }
+--    when True $ putIOwords ["callHTTP8post" , showT req2, "text length", showT length]
+--    res <- callIO $
+--        do
+--                 Http.httpLBS req2
+--            `catchError` \e -> do
+--                     putIOwords ["callHTTP8post  error caught 3", showT e
+--                            , "\n should not occur - caught by callIO ??"
+--                            , "\n note hint: replace localhost by 127.0.0.1"
+--                            ,  "\n", showT req2]
+--                     fail . unwords $  [ "callHTTP8post httperror 3", show e]
+--                                             -- is in the IO monad, not ErrIO
+
 callHTTP8post :: Bool -> Text -> Text -> Text -> Text -> ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
@@ -69,11 +93,10 @@ callHTTP8post debug appType dest path txt = do
     req1 <- Http.parseRequest . t2s $ dest
     let length = lengthChar txt
     let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
-                $ Http.setRequestHeader "Content-Type" ["application/sparql-update"]
+                $ Http.setRequestHeader "Content-Type" [t2b appType]
                 $ Http.setRequestMethod "POST"
                 $ Http.setRequestPath (t2b path)
 --                $ Conduit.ResponseTimeout 300000 -- msecs
-
                 req1
 --                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
 ----            }
@@ -141,7 +164,7 @@ makeHttpPost7 debug dest path query appType txt = do
     req1 <- Http.parseRequest . show $ dest
     let length = lengthChar txt
     let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
-                $ Http.setRequestHeader "Content-Type" ["application/sparql-update"]
+                $ Http.setRequestHeader "Content-Type" [t2b appType]
                 $ Http.setRequestMethod "POST"
                 $ Http.setRequestPath (t2b path)
                 $ Http.setRequestQueryString (map formatQuery query)
