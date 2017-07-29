@@ -21,8 +21,8 @@ module Main where
 
 import Uniform.Strings
 import           Test.Framework
-import {-@ HTF_TESTS @-} Uniform.HttpCall
-import {-@ HTF_TESTS @-} Uniform.HttpGet
+import {-@ HTF_TESTS @-} Uniform.HttpCallWithConduit
+import {-@ HTF_TESTS @-} Uniform.HttpURI
 
 main =  do
     putStrLn "Lit Text Test.hs:\n"
