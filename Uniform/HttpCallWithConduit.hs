@@ -100,7 +100,8 @@ callHTTP8post debug appType dest path txt = do
                 req1
 --                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
 ----            }
-    when True $ putIOwords ["callHTTP8post" , showT req2, "text length", showT length]
+    when True $ putIOwords ["callHTTP8post" , showT req2, "text length"
+                    , showT length]
     res <- callIO $
         do
                  Http.httpLBS req2
@@ -150,7 +151,7 @@ callHTTP8post debug appType dest path txt = do
     when True $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
     let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
     -- stops if not an UTF8 encoded text
-    when True $ putIOwords ["callHTTP8post response: ", res2]
+--    when False $ putIOwords ["callHTTP8post response: ", res2]
     return res2
 
 formatQuery :: (Text, Maybe Text) -> (ByteString, Maybe ByteString)
@@ -172,25 +173,25 @@ makeHttpPost7 debug dest path query appType txt = do
                 req1
 --                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
 ----            }
-    when True $ putIOwords ["callHTTP8post" , showT req2, "text length", showT length]
+    when True $ putIOwords ["makeHttpPost7" , showT req2, "text length", showT length]
     res <- callIO $
         do
                  Http.httpLBS req2
             `catchError` \e -> do
-                     putIOwords ["callHTTP8post  error caught 3", showT e
+                     putIOwords ["makeHttpPost7  error caught 3", showT e
                             , "\n should not occur - caught by callIO ??"
                             , "\n note hint: replace localhost by 127.0.0.1"
                             ,  "\n", showT req2]
-                     fail . unwords $  [ "callHTTP8post httperror 3", show e]
+                     fail . unwords $  [ "makeHttpPost7 httperror 3", show e]
                                              -- is in the IO monad, not ErrIO
 
 
     let statusCode = Http.getResponseStatusCode res
-    when True $ putIOwords ["callHTTP8post The status code was: ", showT statusCode]
+    when True $ putIOwords ["makeHttpPost7 The status code was: ", showT statusCode]
     when True $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
     let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
     -- stops if not an UTF8 encoded text
-    when True $ putIOwords ["callHTTP8post response: ", res2]
+--    when True $ putIOwords ["makeHttpPost7 response: ", res2]
     return res2
 {-
 -- simplified version with more error reported
