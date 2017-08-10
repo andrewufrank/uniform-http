@@ -56,7 +56,7 @@ callHTTP8get debug dest = do
     putIOwords [showT (Http.getResponseHeader "Content-Type" response)]
     let res = bb2t . bl2b . Http.getResponseBody $ response :: Text
     -- stops if not an UTF8 encoded text
-    putIOwords ["callHTTP8get response: ", res]
+    putIOwords ["callHTTP8get response: ", take' 200 res]
     return res
 
 --callHTTP9get :: Bool -> URI ->  Text  -> ErrIO  Text
