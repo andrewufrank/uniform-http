@@ -171,9 +171,9 @@ makeHttpPost7 debug dest path query appType txt = do
                 $ Http.setRequestQueryString (map formatQuery query)
 --                $ Conduit.ResponseTimeout 300000 -- msecs
                 req1
---                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
+                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
 ----            }
-    when False $ putIOwords ["makeHttpPost7" , showT req2, "text length", showT length]
+    when False $ putIOwords ["makeHttpPost7", showT req2, "text length", showT length]
     res <- callIO $
         do
                  Http.httpLBS req2
