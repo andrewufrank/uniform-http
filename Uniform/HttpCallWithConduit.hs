@@ -96,8 +96,10 @@ callHTTP8post debug appType dest path txt = do
                 $ Http.setRequestHeader "Content-Type" [t2b appType]
                 $ Http.setRequestMethod "POST"
                 $ Http.setRequestPath (t2b path)
+--                 $ Conduit.responseTimeout  ( Conduit.responseTimeoutMicro 300000000)
 --                $ Conduit.ResponseTimeout 300000 -- msecs
                 req1
+                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
 --                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
 ----            }
     when True $ putIOwords ["callHTTP8post" , showT req2, "text length"
