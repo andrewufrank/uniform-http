@@ -99,7 +99,9 @@ callHTTP8post debug appType dest path txt = do
 --                 $ Conduit.responseTimeout  ( Conduit.responseTimeoutMicro 300000000)
 --                $ Conduit.ResponseTimeout 300000 -- msecs
                 req1
-                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
+                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
+                    -- the timeout is handled by the fuseki server?
+--                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
 --                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
 ----            }
     when True $ putIOwords ["callHTTP8post" , showT req2, "text length"
