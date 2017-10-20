@@ -89,10 +89,51 @@ callHTTP8get debug dest = do
 callHTTP8post :: Bool -> Text -> Text -> Text -> Text -> ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
-callHTTP8post debug appType dest path txt = do
+callHTTP8post debug appType dest path txt =
+    callHTTP9post debug appType dest path (b2bl . t2b $ txt)
+--    do
+--    req1 <- Http.parseRequest . t2s $ dest
+--    let length = lengthChar txt
+--    let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
+--                $ Http.setRequestHeader "Content-Type" [t2b appType]
+--                $ Http.setRequestMethod "POST"
+--                $ Http.setRequestPath (t2b path)
+----                 $ Conduit.responseTimeout  ( Conduit.responseTimeoutMicro 300000000)
+----                $ Conduit.ResponseTimeout 300000 -- msecs
+--                req1
+--                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
+--                    -- the timeout is handled by the fuseki server?
+----                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
+----                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
+------            }
+--    when True $ putIOwords ["callHTTP8post" , showT req2, "text length"
+--                    , showT length]
+--    res <- callIO $
+--        do
+--                 Http.httpLBS req2
+--            `catchError` \e -> do
+--                     putIOwords ["callHTTP8post  error caught 3", showT e
+--                            , "\n should not occur - caught by callIO ??"
+--                            , "\n note hint: replace localhost by 127.0.0.1"
+--                            ,  "\n", showT req2]
+--                     fail . unwords $  [ "callHTTP8post httperror 3", show e]
+--
+--    let statusCode = Http.getResponseStatusCode res
+--    when True $ putIOwords ["callHTTP8post The status code was: ", showT statusCode]
+--    when True $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
+--    let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
+--    -- stops if not an UTF8 encoded text
+----    when False $ putIOwords ["callHTTP8post response: ", res2]
+--    return res2
+                                             -- is in the IO monad, not ErrIO
+
+callHTTP9post :: Bool -> Text -> Text -> Text -> LazyByteString -> ErrIO Text
+-- post a body to the  url given as a type given
+--application/sparql-update
+callHTTP9post debug appType dest path txt = do
     req1 <- Http.parseRequest . t2s $ dest
-    let length = lengthChar txt
-    let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
+--    let length = lengthChar . b2s . bl2b $ txt
+    let req2 = Http.setRequestBodyLBS txt -- (b2bl . t2b $ txt)
                 $ Http.setRequestHeader "Content-Type" [t2b appType]
                 $ Http.setRequestMethod "POST"
                 $ Http.setRequestPath (t2b path)
@@ -104,18 +145,27 @@ callHTTP8post debug appType dest path txt = do
 --                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
 --                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
 ----            }
-    when True $ putIOwords ["callHTTP8post" , showT req2, "text length"
-                    , showT length]
-    res <- callIO $
-        do
-                 Http.httpLBS req2
+    when True $ putIOwords ["callHTTP9post" , showT req2 ]
+--            "text length"
+--                    , showT length]
+    res <- callIO $ do
+              Http.httpLBS req2
             `catchError` \e -> do
-                     putIOwords ["callHTTP8post  error caught 3", showT e
+                     putIOwords ["callHTTP9post  error caught 3", showT e
                             , "\n should not occur - caught by callIO ??"
                             , "\n note hint: replace localhost by 127.0.0.1"
                             ,  "\n", showT req2]
-                     fail . unwords $  [ "callHTTP8post httperror 3", show e]
+                     fail . unwords $  [ "callHTTP9post httperror 3", show e]
                                              -- is in the IO monad, not ErrIO
+    let statusCode = Http.getResponseStatusCode res
+    when True $ putIOwords ["callHTTP8post The status code was: ", showT statusCode]
+    when True $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
+    let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
+    -- stops if not an UTF8 encoded text
+--    when False $ putIOwords ["callHTTP8post response: ", res2]
+    return res2
+
+
 
 --    let debugHTTP = True
 --    when debugHTTP $ putIOwords ["callHTTP8post did not produce error"]
@@ -150,13 +200,6 @@ callHTTP8post debug appType dest path txt = do
 --                Left msg2 -> throwError . s2t $ msg2
 --                Right b -> return (b ::ByteString)
 
-    let statusCode = Http.getResponseStatusCode res
-    when True $ putIOwords ["callHTTP8post The status code was: ", showT statusCode]
-    when True $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
-    let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
-    -- stops if not an UTF8 encoded text
---    when False $ putIOwords ["callHTTP8post response: ", res2]
-    return res2
 
 formatQuery :: (Text, Maybe Text) -> (ByteString, Maybe ByteString)
 formatQuery (a, mb) = (t2b a, fmap t2b mb)
