@@ -32,9 +32,9 @@ module Uniform.HttpCallWithConduit (
 import           Uniform.Error
 import           Uniform.Strings
 --
-import qualified Network.HTTP.Simple          as Http
-import           Network.HTTP.Client          as Client
-import           Network.HTTP.Conduit         as Conduit
+import     qualified      Network.HTTP.Simple          as Http
+--import     qualified      Network.HTTP.Client          as Client
+import     qualified      Network.HTTP.Conduit         as Conduit
 --import           Network.HTTP.Client.TLS
 --import           Network.HTTP.Types.Status  (statusCode)
 
@@ -42,7 +42,7 @@ import Data.Text (take)
 import  Test.Framework
 import Uniform.HttpURI
 
-type Request2 = Http.Request
+--type Request2 = Http.Request
 
 callHTTP8get :: Bool -> Text  -> ErrIO  Text
 -- call the http-conduit simple for a get
