@@ -108,45 +108,45 @@ callHTTP9post debug appType dest path txt = do
 
 
 
---formatQuery :: (Text, Maybe Text) -> (ByteString, Maybe ByteString)
---formatQuery (a, mb) = (t2b a, fmap t2b mb)
+formatQuery :: (Text, Maybe Text) -> (ByteString, Maybe ByteString)
+formatQuery (a, mb) = (t2b a, fmap t2b mb)
 --
---makeHttpPost7 :: Bool ->  URI -> Text -> [(Text, Maybe Text)] -> Text -> Text ->  ErrIO Text
----- post a body to the  url given as a type given
-----application/sparql-update
----- path is query .. or something which is type,value pairs
---makeHttpPost7 debug dest path query appType txt = do
---    req1 <- Http.parseRequest . show $ dest
---    let length = lengthChar txt
---    let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
---                $ Http.setRequestHeader "Content-Type" [t2b appType]
---                $ Http.setRequestMethod "POST"
---                $ Http.setRequestPath (t2b path)
---                $ Http.setRequestQueryString (map formatQuery query)
-----                $ Conduit.ResponseTimeout 300000 -- msecs
---                req1
---                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
-------            }
---    when False $ putIOwords ["makeHttpPost7", showT req2, "text length", showT length]
---    res <- callIO $
---        do
---                 Http.httpLBS req2
---            `catchError` \e -> do
---                     putIOwords ["makeHttpPost7  error caught 3", showT e
---                            , "\n should not occur - caught by callIO ??"
---                            , "\n note hint: replace localhost by 127.0.0.1"
---                            ,  "\n", showT req2]
---                     fail . unwords $  [ "makeHttpPost7 httperror 3", show e]
---                                             -- is in the IO monad, not ErrIO
---
---
---    let statusCode = Http.getResponseStatusCode res
---    when True $ putIOwords ["makeHttpPost7 The status code was: ", showT statusCode]
---    when True $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
---    let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
---    -- stops if not an UTF8 encoded text
-----    when True $ putIOwords ["makeHttpPost7 response: ", res2]
---    return res2
+makeHttpPost7 :: Bool ->  URI -> Text -> [(Text, Maybe Text)] -> Text -> Text ->  ErrIO Text
+-- post a body to the  url given as a type given
+--application/sparql-update
+-- path is query .. or something which is type,value pairs
+makeHttpPost7 debug dest path query appType txt = do
+    req1 <- Http.parseRequest . show $ dest
+    let length = lengthChar txt
+    let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
+                $ Http.setRequestHeader "Content-Type" [t2b appType]
+                $ Http.setRequestMethod "POST"
+                $ Http.setRequestPath (t2b path)
+                $ Http.setRequestQueryString (map formatQuery query)
+--                $ Conduit.ResponseTimeout 300000 -- msecs
+                req1
+                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
+----            }
+    when False $ putIOwords ["makeHttpPost7", showT req2, "text length", showT length]
+    res <- callIO $
+        do
+                 Http.httpLBS req2
+            `catchError` \e -> do
+                     putIOwords ["makeHttpPost7  error caught 3", showT e
+                            , "\n should not occur - caught by callIO ??"
+                            , "\n note hint: replace localhost by 127.0.0.1"
+                            ,  "\n", showT req2]
+                     fail . unwords $  [ "makeHttpPost7 httperror 3", show e]
+                                             -- is in the IO monad, not ErrIO
+
+
+    let statusCode = Http.getResponseStatusCode res
+    when debug $ putIOwords ["makeHttpPost7 The status code was: ", showT statusCode]
+    when debug $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
+    let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
+    -- stops if not an UTF8 encoded text
+--    when True $ putIOwords ["makeHttpPost7 response: ", res2]
+    return res2
 {-
 -- simplified version with more error reported
 _callHTTP6 :: Bool -> Http.Request ByteString -> ErrIO  ByteString
