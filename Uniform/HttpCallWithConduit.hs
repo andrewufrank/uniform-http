@@ -127,7 +127,7 @@ makeHttpPost7 debug dest path query appType txt = do
                 req1
                     {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
 ----            }
-    when False $ putIOwords ["makeHttpPost7", showT req2, "text length", showT length]
+    when debug $ putIOwords ["makeHttpPost7", showT req2, "text length", showT length]
     res <- callIO $
         do
                  Http.httpLBS req2
@@ -137,12 +137,12 @@ makeHttpPost7 debug dest path query appType txt = do
                             , "\n note hint: replace localhost by 127.0.0.1"
                             ,  "\n", showT req2]
                      fail . unwords $  [ "makeHttpPost7 httperror 3", show e]
-                                             -- is in the IO monad, not ErrIO
+                                         -- is in the IO monad, not ErrIO
 
 
     let statusCode = Http.getResponseStatusCode res
     when debug $ putIOwords ["makeHttpPost7 The status code was: ", showT statusCode]
-    when debug $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
+    when debug $ putIOwords ["\t", showT (Http.getResponseHeader "Content-Type" res)]
     let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
     -- stops if not an UTF8 encoded text
 --    when True $ putIOwords ["makeHttpPost7 response: ", res2]
