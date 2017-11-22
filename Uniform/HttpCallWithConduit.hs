@@ -43,6 +43,7 @@ import  Test.Framework
 import Uniform.HttpURI
 
 --type Request2 = Http.Request
+type HttpQueryString = [(Text, Maybe Text)]
 
 callHTTP8get :: Bool -> Text  -> ErrIO  Text
 -- call the http-conduit simple for a get
@@ -70,20 +71,26 @@ callHTTP9post :: Bool -> Text -> Text -> Text -> LazyByteString -> ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
 callHTTP9post debug appType dest path txt = do
+    callHTTP10post debug appType dest path txt [] Nothing
+
+callHTTP10post :: Bool -> Text -> Text -> Text -> LazyByteString -> HttpQueryString -> Maybe Int -> ErrIO Text
+-- post a body to the  url given as a type given
+--application/sparql-update
+-- timeout in seconds - will be converted, nothing gives default
+callHTTP10post debug appType dest path txt query timeout = do
     req1 <- Http.parseRequest . t2s $ dest
 --    let length = lengthChar . b2s . bl2b $ txt
     let req2 = Http.setRequestBodyLBS txt -- (b2bl . t2b $ txt)
                 $ Http.setRequestHeader "Content-Type" [t2b appType]
                 $ Http.setRequestMethod "POST"
                 $ Http.setRequestPath (t2b path)
---                 $ Conduit.responseTimeout  ( Conduit.responseTimeoutMicro 300000000)
---                $ Conduit.ResponseTimeout 300000 -- msecs
+                $ Http.setRequestQueryString (map formatQuery query)
                 req1
-                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
-                    -- the timeout is handled by the fuseki server?
---                    {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
---                    {Conduit.responseTimeout = Conduit.responseTimeoutNone}
-----            }
+                    {Conduit.responseTimeout =
+                            maybe Conduit.responseTimeoutNone
+                                    (Conduit.responseTimeoutMicro . (1000000 *))
+                                    timeout
+                    }
     when True $ putIOwords ["callHTTP9post" , showT req2 ]
 --            "text length"
 --                    , showT length]
@@ -104,18 +111,25 @@ callHTTP9post debug appType dest path txt = do
 --    when False $ putIOwords ["callHTTP8post response: ", res2]
     return res2
 
-
+-- TODO merge the post7 and post9
+-- post7 has a query paramter with
+makeHttpPost7 :: Bool ->  URI -> Text -> [(Text, Maybe Text)] -> Text -> Text ->  ErrIO Text
+-- post a body to the  url given as a type given
+--application/sparql-update
+-- path is query .. or something which is type,value pairs
+makeHttpPost7 debug dest path query appType txt = do
+    callHTTP10post debug appType (showT dest) path (b2bl . t2b $ txt) query (Just 300)
 
 
 
 formatQuery :: (Text, Maybe Text) -> (ByteString, Maybe ByteString)
 formatQuery (a, mb) = (t2b a, fmap t2b mb)
 --
-makeHttpPost7 :: Bool ->  URI -> Text -> [(Text, Maybe Text)] -> Text -> Text ->  ErrIO Text
+makeHttpPost7x  :: Bool ->  URI -> Text -> [(Text, Maybe Text)] -> Text -> Text ->  ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
 -- path is query .. or something which is type,value pairs
-makeHttpPost7 debug dest path query appType txt = do
+makeHttpPost7x  debug dest path query appType txt = do
     req1 <- Http.parseRequest . show $ dest
     let length = lengthChar txt
     let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
