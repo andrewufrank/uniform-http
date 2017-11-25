@@ -24,6 +24,7 @@
 module Uniform.HttpCallWithConduit (
     module Uniform.HttpCallWithConduit
     , Http.Request, Http.parseRequest, Http.parseRequest_
+    , HttpQueryString
     , module Uniform.HttpURI
 --    , Net.RequestMethod (..)  -- for GET, POST
             )  where
@@ -91,17 +92,17 @@ callHTTP10post debug appType dest path txt query timeout = do
                                     (Conduit.responseTimeoutMicro . (1000000 *))
                                     timeout
                     }
-    when True $ putIOwords ["callHTTP9post" , showT req2 ]
+    when debug $ putIOwords ["callHTTP10post" , showT req2 ]
 --            "text length"
 --                    , showT length]
     res <- callIO $ do
               Http.httpLBS req2
             `catchError` \e -> do
-                     putIOwords ["callHTTP9post  error caught 3", showT e
+                     putIOwords ["callHTTP10post  error caught 3", showT e
                             , "\n should not occur - caught by callIO ??"
                             , "\n note hint: replace localhost by 127.0.0.1"
                             ,  "\n", showT req2]
-                     fail . unwords $  [ "callHTTP9post httperror 3", show e]
+                     fail . unwords $  [ "callHTTP10post httperror 3", show e]
                                              -- is in the IO monad, not ErrIO
     let statusCode = Http.getResponseStatusCode res
     when True $ putIOwords ["callHTTP8post The status code was: ", showT statusCode]
