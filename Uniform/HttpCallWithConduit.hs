@@ -106,7 +106,7 @@ callHTTP10post debug appType dest path txt query timeout = do
                                              -- is in the IO monad, not ErrIO
     let statusCode = Http.getResponseStatusCode res
     when True $ putIOwords ["callHTTP8post The status code was: ", showT statusCode]
-    when True $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
+    when debug $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
     let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
     -- stops if not an UTF8 encoded text
 --    when False $ putIOwords ["callHTTP8post response: ", res2]
