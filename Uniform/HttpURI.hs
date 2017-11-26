@@ -41,13 +41,20 @@ localhostTextFile = "http://www.gerastree.at/testaf1" :: Text
 
 
 makeAbsURI :: Text -> URI
-makeAbsURI u = maybe (errorT ["makeURI in Foundation Servers", u])
+makeAbsURI u = maybe (errorT ["makeURI in Producer.Servers", u])
                 id
                 (parseAbsoluteURI . t2s $ u)
 makeURI :: Text -> URI
-makeURI u = maybe (errorT ["makeURI in Foundation Servers", u])
+makeURI u = maybe (errorT ["makeURI in Producer.Servers", u])
                 id
                 (parseURI . t2s $ u)
+
+addToURI :: URI -> Text -> URI
+-- add a text at end to an URI
+addToURI u t =    makeURI $ (showT u) </> t
+
+test_add2uri = assertEqual "http://nlp.gerastree.at:9001/xtestx" (showT $ addToURI destTest9001g "xtestx")
+test_add2uri2 = assertEqual "http://127.0.0.1/xtestx" (showT $ addToURI forportTest "xtestx")
 
 addPort2URI :: URI -> Int -> URI
 addPort2URI u i = makeURI (showT u <:> showT i)

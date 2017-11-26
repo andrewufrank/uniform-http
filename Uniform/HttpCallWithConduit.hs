@@ -24,7 +24,7 @@
 module Uniform.HttpCallWithConduit (
     module Uniform.HttpCallWithConduit
     , Http.Request, Http.parseRequest, Http.parseRequest_
-    , HttpQueryString
+--    , HttpQueryString
     , module Uniform.HttpURI
 --    , Net.RequestMethod (..)  -- for GET, POST
             )  where
