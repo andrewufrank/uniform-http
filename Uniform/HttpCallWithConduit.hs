@@ -62,24 +62,24 @@ callHTTP8get debug dest = do
     return res
 
 
-callHTTP8post :: Bool -> Text -> Text -> Text -> Text -> ErrIO Text
+callHTTP8post :: Bool -> Text -> URI -> Text -> Text -> ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
 callHTTP8post debug appType dest path txt =
     callHTTP9post debug appType dest path (b2bl . t2b $ txt)
 
-callHTTP9post :: Bool -> Text -> Text -> Text -> LazyByteString -> ErrIO Text
+callHTTP9post :: Bool -> Text -> URI -> Text -> LazyByteString -> ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
 callHTTP9post debug appType dest path txt = do
     callHTTP10post debug appType dest path txt [] Nothing
 
-callHTTP10post :: Bool -> Text -> Text -> Text -> LazyByteString -> HttpQueryString -> Maybe Int -> ErrIO Text
+callHTTP10post :: Bool -> Text -> URI -> Text -> LazyByteString -> HttpQueryString -> Maybe Int -> ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
 -- timeout in seconds - will be converted, nothing gives default
 callHTTP10post debug appType dest path txt query timeout = do
-    req1 <- Http.parseRequest . t2s $ dest
+    req1 <- Http.parseRequest . show $ dest
 --    let length = lengthChar . b2s . bl2b $ txt
     let req2 = Http.setRequestBodyLBS txt -- (b2bl . t2b $ txt)
                 $ Http.setRequestHeader "Content-Type" [t2b appType]
@@ -119,7 +119,7 @@ makeHttpPost7 :: Bool ->  URI -> Text -> [(Text, Maybe Text)] -> Text -> Text ->
 --application/sparql-update
 -- path is query .. or something which is type,value pairs
 makeHttpPost7 debug dest path query appType txt = do
-    callHTTP10post debug appType (showT dest) path (b2bl . t2b $ txt) query (Just 300)
+    callHTTP10post debug appType ( dest) path (b2bl . t2b $ txt) query (Just 300)
 
 
 
