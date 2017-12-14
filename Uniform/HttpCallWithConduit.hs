@@ -29,7 +29,6 @@ module Uniform.HttpCallWithConduit (
 --    , Net.RequestMethod (..)  -- for GET, POST
             )  where
 
-
 import           Uniform.Error
 import           Uniform.Strings
 --
