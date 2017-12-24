@@ -77,6 +77,7 @@ callHTTP10post :: Bool -> Text -> URI -> Text -> LazyByteString -> HttpQueryStri
 -- post a body to the  url given as a type given
 --application/sparql-update
 -- timeout in seconds - will be converted, nothing gives default
+    -- URI not text for destination
 callHTTP10post debug appType dest path txt query timeout = do
     req1 <- Http.parseRequest . show $ dest
 --    let length = lengthChar . b2s . bl2b $ txt
