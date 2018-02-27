@@ -26,16 +26,16 @@ module Uniform.HttpCallWithConduit_test where
 import           Uniform.Error
 import           Uniform.Strings
 --
-import     qualified      Network.HTTP.Simple          as Http
+--import     qualified      Network.HTTP.Simple          as Http
 --import     qualified      Network.HTTP.Client          as Client
-import     qualified      Network.HTTP.Conduit         as Conduit
+--import     qualified      Network.HTTP.Conduit         as Conduit
 --import           Network.HTTP.Client.TLS
 --import           Network.HTTP.Types.Status  (statusCode)
 import Uniform.HttpCallWithConduit
 
-import Data.Text (take)
+--import Data.Text (take)
 import  Test.Framework
-import Uniform.HttpURI
+--import Uniform.HttpURI
 
 {-
 makeHTTPgetrequestNoBody :: URItext -> Text -> Text -> Net.Request String

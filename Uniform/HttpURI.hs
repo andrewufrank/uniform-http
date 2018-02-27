@@ -17,6 +17,7 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE StandaloneDeriving   #-}
 -- {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
 module Uniform.HttpURI (
@@ -32,6 +33,8 @@ import           Uniform.Strings
 import Network.URI
 --import           Test.Framework
 --
+--deriving instance Read URI
+--deriving instance Read URIAuth
 
 
 
@@ -51,14 +54,22 @@ makeURI u = maybe (errorT ["makeURI in Producer.Servers", u])
 
 addToURI :: URI -> Text -> URI
 -- add a text at end to an URI
-addToURI u t =    makeURI $ (showT u) </> t
+addToURI u t =    makeURI $ (uriT u) </> t
 
 
 addPort2URI :: URI -> Int -> URI
-addPort2URI u i = makeURI (showT u <:> showT i)
+addPort2URI u i = makeURI (uriT u <:> showT i)
 
+uriT u = s2t . uriToString defaultUserInfoMap u $ ""
 
-
-
+-- copied
+defaultUserInfoMap :: String -> String
+defaultUserInfoMap uinf = user++newpass
+    where
+        (user,pass) = break (==':') uinf
+        newpass     = if null pass || (pass == "@")
+                                   || (pass == ":@")
+                        then pass
+                        else ":...@"
 
 

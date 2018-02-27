@@ -32,17 +32,18 @@ import Uniform.HttpURI
 
 --
 
-test_add2uri = assertEqual "http://nlp.gerastree.at:9001/xtestx" (showT $ addToURI destTest9001g "xtestx")
-test_add2uri2 = assertEqual "http://127.0.0.1/xtestx" (showT $ addToURI forportTest "xtestx")
-
-
+test_add2uri = assertEqual "\"http://nlp.gerastree.at:9001/xtestx\""
+                        (showT $ addToURI destTest9001g "xtestx")
+test_add2uri2 = assertEqual "\"http://127.0.0.1/xtestx\""
+                        (showT $ addToURI forportTest "xtestx")
 
 
 destTestFailx = "127.0.0.1:9000" ::Text  -- missing http://
+destTestOKx = "http://127.0.0.1:9001"
 destTest9001g = makeAbsURI "http://nlp.gerastree.at:9001"
 destTest9000e = makeAbsURI "http://nlp.gerastree.at:9000"
 
-test_makeURIok = assertEqual "http://nlp.gerastree.at:9001" (showT   destTest9001g)
+test_makeURIok = assertEqual "\"http://nlp.gerastree.at:9001\"" (showT   destTest9001g)
 test_makeURIfail = do
             res <- mustError "test failing uri construction"
                                 $ return $ makeAbsURI  destTestFailx
@@ -50,20 +51,23 @@ test_makeURIfail = do
 --test_makeURIfail2 = assertEqual "Nothing" (showT $ makeAbsURI  destTestFailx)
 
 
-test_addport = assertEqual "http://127.0.0.1:9001" (showT $ addPort2URI forportTest 9001)
+test_addport = assertEqual "\"http://127.0.0.1:9001\"" (showT $ addPort2URI forportTest 9001)
 
--- todo move to error
--- does not work in the above situation
-mustError :: MonadError m => Text -> m a -> m Bool
-mustError msg f = do
-                        f
-                        return False
-               `catchError` \e -> return True
 
 forportTest :: URI
 forportTest = makeURI "http://127.0.0.1"
 
-uriTest = "http://127.0.0.1:9001/?annotators=tokenize%2Cssplit%2Cpos%2Clemma%2Cner%2Cparse&outputFormat=xml"
+uriTest = "http://127.0.0.1:9001/?annotators=tokenize%2Cssplit%2\
+            \Cpos%2Clemma%2Cner%2Cparse&outputFormat=xml"
 
-test_parseURI = assertEqual "Just http://127.0.0.1:9001" (showT . NetURI.parseURI $ destTest9001)
-test_parseURI_fail  = assertEqual "Nothing" (showT . NetURI.parseURI $ destTestFail)
+test_parseURI = assertEqual "Just \"http://127.0.0.1:9001\""
+                    (showT . parseURI $  destTestOKx)
+test_parseURI_fail  = assertEqual "Nothing" (showT . parseURI . t2s $ destTestFailx)
+
+--instance Read URI where
+--        readsPrec i r =   maybe []  (\res -> [(res, rem)] ) $ parseURI x
+--                where  [(x ::String , rem)] = readsPrec i r
+
+
+test_s1 = assertEqual "\"http://nlp.gerastree.at:9001\"" (show destTest9001g)
+test_r1 = assertEqual destTest9001g (read . show $ destTest9001g)
