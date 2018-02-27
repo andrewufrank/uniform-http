@@ -9,7 +9,7 @@
 -- because teh old HTTP cannot do https
 
 -----------------------------------------------------------------------------
-{-# OPTIONS_GHC -F -pgmF htfpp #-}
+--{-# OPTIONS_GHC -F -pgmF htfpp #-}
 
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
@@ -39,7 +39,7 @@ import     qualified      Network.HTTP.Conduit         as Conduit
 --import           Network.HTTP.Types.Status  (statusCode)
 
 import Data.Text (take)
-import  Test.Framework
+--import  Test.Framework
 import Uniform.HttpURI
 
 --type Request2 = Http.Request
@@ -105,7 +105,8 @@ callHTTP10post debug appType dest path txt query timeout = do
                      fail . unwords $  [ "callHTTP10post httperror 3", show e]
                                              -- is in the IO monad, not ErrIO
     let statusCode = Http.getResponseStatusCode res
-    when True $ putIOwords ["callHTTP8post The status code was: ", showT statusCode]
+--    when debug $
+    putIOwords ["callHTTP10post The status code was: ", showT statusCode]
     when debug $ putIOwords [showT (Http.getResponseHeader "Content-Type" res)]
     let res2 = bb2t . bl2b . Http.getResponseBody $ res :: Text
     -- stops if not an UTF8 encoded text
@@ -118,6 +119,7 @@ makeHttpPost7 :: Bool ->  URI -> Text -> [(Text, Maybe Text)] -> Text -> Text ->
 -- post a body to the  url given as a type given
 --application/sparql-update
 -- path is query .. or something which is type,value pairs
+-- is not used anymore?
 makeHttpPost7 debug dest path query appType txt = do
     callHTTP10post debug appType ( dest) path (b2bl . t2b $ txt) query (Just 300)
 
@@ -162,6 +164,8 @@ makeHttpPost7x  debug dest path query appType txt = do
     -- stops if not an UTF8 encoded text
 --    when True $ putIOwords ["makeHttpPost7 response: ", res2]
     return res2
+
+
 {-
 -- simplified version with more error reported
 _callHTTP6 :: Bool -> Http.Request ByteString -> ErrIO  ByteString
@@ -298,4 +302,5 @@ test_request5 = do
 -- fromJustNote' msg mb = case mb of
 --                             Just r -> r
 --                             Nothing -> errorT ["fromJust at ", msg , "with arg", showT mb]
+
 -}
