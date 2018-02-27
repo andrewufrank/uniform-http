@@ -36,7 +36,8 @@ import Network.URI
 --deriving instance Read URI
 --deriving instance Read URIAuth
 
-
+instance IsString URI where
+    fromString s = read s
 
 localhostTextFile = "http://www.gerastree.at/testaf1" :: Text
 -- parseRequest_  does not throw useful exception
