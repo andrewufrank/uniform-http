@@ -22,7 +22,7 @@
 
 module Uniform.HttpURI (
     module Uniform.HttpURI
-    , module Network.URI
+--    , module Network.URI
             )  where
 
 
@@ -30,7 +30,7 @@ import           Uniform.Error
 import           Uniform.Strings
 --import Uniform.HttpCall
 --import Uniform.HttpCallWithConduit
-import Network.URI
+import qualified Network.URI as N
 --import           Test.Framework
 --
 --deriving instance Read URI
@@ -43,15 +43,24 @@ localhostTextFile = "http://www.gerastree.at/testaf1" :: Text
 -- parseRequest_  does not throw useful exception
 -- for the conduit based http
 
+newtype URI = URI N.URI  deriving (Eq)
+
+un2 (URI u) = u   -- to remove the newtype level
+
+parseURI :: Text -> Maybe URI
+parseURI t = fmap URI . N.parseURI . t2s $ t
+
+parseAbsoluteURI :: Text -> Maybe URI
+parseAbsoluteURI t = fmap URI . N.parseAbsoluteURI . t2s $ t
 
 makeAbsURI :: Text -> URI
-makeAbsURI u = maybe (errorT ["makeURI in Producer.Servers", u])
+makeAbsURI u = URI $ maybe (errorT ["makeURI in Producer.Servers", u])
                 id
-                (parseAbsoluteURI . t2s $ u)
+                (N.parseAbsoluteURI . t2s   $ u)
 makeURI :: Text -> URI
-makeURI u = maybe (errorT ["makeURI in Producer.Servers", u])
+makeURI u = URI $ maybe (errorT ["makeURI in Producer.Servers", u])
                 id
-                (parseURI . t2s $ u)
+                (N.parseURI . t2s $ u)
 
 addToURI :: URI -> Text -> URI
 -- add a text at end to an URI
@@ -61,7 +70,12 @@ addToURI u t =    makeURI $ (uriT u) </> t
 addPort2URI :: URI -> Int -> URI
 addPort2URI u i = makeURI (uriT u <:> showT i)
 
-uriT u = s2t . uriToString defaultUserInfoMap u $ ""
+uriT :: URI -> Text
+-- ^ convert an uri to a text (but not a show instance with "")
+uriT = s2t . uriS
+
+uriS :: URI -> String
+uriS u =  N.uriToString defaultUserInfoMap (un2 u) $ ""
 
 -- copied
 defaultUserInfoMap :: String -> String
@@ -72,5 +86,16 @@ defaultUserInfoMap uinf = user++newpass
                                    || (pass == ":@")
                         then pass
                         else ":...@"
+
+instance IsString URI where
+    fromString = read . show
+
+instance Show URI where
+    showsPrec _ s s2 = (show $ uriS s )++ s2
+
+instance Read URI where
+        readsPrec i r =  maybe []  (\res -> [(URI res, rem1)] ) $ N.parseURI x
+                where  [(x ::String , rem1)] = readsPrec i r
+
 
 

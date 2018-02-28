@@ -62,7 +62,7 @@ uriTest = "http://127.0.0.1:9001/?annotators=tokenize%2Cssplit%2\
 
 test_parseURI = assertEqual "Just \"http://127.0.0.1:9001\""
                     (showT . parseURI $  destTestOKx)
-test_parseURI_fail  = assertEqual "Nothing" (showT . parseURI . t2s $ destTestFailx)
+test_parseURI_fail  = assertEqual "Nothing" (showT . parseURI  $ destTestFailx)
 
 --instance Read URI where
 --        readsPrec i r =   maybe []  (\res -> [(res, rem)] ) $ parseURI x
