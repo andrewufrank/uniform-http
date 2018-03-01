@@ -23,7 +23,8 @@
 
 module Uniform.HttpCallWithConduit (
     module Uniform.HttpCallWithConduit
-    , Http.Request, Http.parseRequest, Http.parseRequest_
+    , Http.Request
+--    , Http.parseRequest, Http.parseRequest_
 --    , HttpQueryString
     , module Uniform.HttpURI
 --    , Net.RequestMethod (..)  -- for GET, POST
@@ -45,20 +46,23 @@ import Uniform.HttpURI
 --type Request2 = Http.Request
 type HttpQueryString = [(Text, Maybe Text)]
 
-callHTTP8get :: Bool -> Text  -> ErrIO  Text
--- call the http-conduit simple for a get
--- see https://haskell-lang.org/library/http-client
-callHTTP8get debug dest = do
-    req1 <- Http.parseRequest . t2s $ dest
-    response <- callIO $  Http.httpLBS req1
-
-    putIOwords ["The status code was: " ,
-               showT (Http.getResponseStatusCode response)]
-    putIOwords [showT (Http.getResponseHeader "Content-Type" response)]
-    let res = bb2t . bl2b . Http.getResponseBody $ response :: Text
-    -- stops if not an UTF8 encoded text
-    putIOwords ["callHTTP8get response: ", take' 200 res]
-    return res
+makeRequest :: URI -> ErrIO Conduit.Request
+makeRequest dest = Http.parseRequest . t2s . uriT $ dest
+--
+--callHTTP8get :: Bool -> Text  -> ErrIO  Text
+---- call the http-conduit simple for a get
+---- see https://haskell-lang.org/library/http-client
+--callHTTP8get debug dest = do
+--    req1 <- Http.parseRequest . t2s $ dest
+--    response <- callIO $  Http.httpLBS req1
+--
+--    putIOwords ["The status code was: " ,
+--               showT (Http.getResponseStatusCode response)]
+--    putIOwords [showT (Http.getResponseHeader "Content-Type" response)]
+--    let res = bb2t . bl2b . Http.getResponseBody $ response :: Text
+--    -- stops if not an UTF8 encoded text
+--    putIOwords ["callHTTP8get response: ", take' 200 res]
+--    return res
 
 
 callHTTP8post :: Bool -> Text -> URI -> Text -> Text -> ErrIO Text
@@ -79,7 +83,7 @@ callHTTP10post :: Bool -> Text -> URI -> Text -> LazyByteString -> HttpQueryStri
 -- timeout in seconds - will be converted, nothing gives default
     -- URI not text for destination
 callHTTP10post debug appType dest path txt query timeout = do
-    req1 <- Http.parseRequest . show $ dest
+    req1 <- makeRequest dest
 --    let length = lengthChar . b2s . bl2b $ txt
     let req2 = Http.setRequestBodyLBS txt -- (b2bl . t2b $ txt)
                 $ Http.setRequestHeader "Content-Type" [t2b appType]
@@ -133,7 +137,7 @@ makeHttpPost7x  :: Bool ->  URI -> Text -> [(Text, Maybe Text)] -> Text -> Text 
 --application/sparql-update
 -- path is query .. or something which is type,value pairs
 makeHttpPost7x  debug dest path query appType txt = do
-    req1 <- Http.parseRequest . show $ dest
+    req1 <- makeRequest dest
     let length = lengthChar txt
     let req2 = Http.setRequestBodyLBS  (b2bl . t2b $ txt)
                 $ Http.setRequestHeader "Content-Type" [t2b appType]
