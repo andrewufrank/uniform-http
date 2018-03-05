@@ -17,17 +17,21 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
 {-# LANGUAGE UndecidableInstances  #-}
-{-# LANGUAGE StandaloneDeriving   #-}
+{-# LANGUAGE StandaloneDeriving
+--    , GeneralizedNewtypeDeriving
+      #-}
 -- {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
 module Uniform.HttpURI (
     module Uniform.HttpURI
+    , module Uniform.Zero
 --    , module Network.URI
             )  where
 
 
 import           Uniform.Error
 import           Uniform.Strings
+import  Uniform.Zero
 --import Uniform.HttpCall
 --import Uniform.HttpCallWithConduit
 import qualified Network.URI as N
@@ -43,8 +47,17 @@ localhostTextFile = "http://www.gerastree.at/testaf1" :: Text
 -- parseRequest_  does not throw useful exception
 -- for the conduit based http
 
-newtype URI = URI N.URI  deriving (Eq)
+newtype HttpVarParams = HttpVarParams [(Text,Maybe Text)] deriving (Show, Read, Eq )
+unHttpVarParams (HttpVarParams p) = p
 
+instance Zeros HttpVarParams where zero = HttpVarParams []
+
+combineHttpVarParams :: HttpVarParams -> HttpVarParams -> HttpVarParams
+combineHttpVarParams p1 p2 = HttpVarParams (p11 ++ p22)
+        where   p11 = unHttpVarParams p1
+                p22 = unHttpVarParams p2
+
+newtype URI = URI N.URI  deriving (Eq)
 un2 (URI u) = u   -- to remove the newtype level
 
 parseURI :: Text -> Maybe URI

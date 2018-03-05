@@ -1,5 +1,5 @@
 name: uniform-http
-version: 0.0.2.2
+version: 0.0.2.3
 cabal-version: >=1.22
 build-type: Simple
 license: GPL
@@ -9,6 +9,7 @@ author: Andrew Frank
 category: Data, Text, Uniform
 synopsis: uniform text based operations to call http
 description: http using text
+    0.0.2.3 added HttpVarParams
 
 source-repository head
     type: git
@@ -21,7 +22,7 @@ library
 --            , HTTP
             , http-conduit
             , http-client
-            , network-uri 
+            , network-uri
 
 -- mine
             , uniform-strings
