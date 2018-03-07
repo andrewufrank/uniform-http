@@ -21,7 +21,7 @@ module Main where
 
 import Uniform.Strings
 import           Test.Framework
-import {-@ HTF_TESTS @-} Uniform.HttpCallWithConduit_test
+import {-@ HTF_TESTS @-} Uniform.HttpCall_test
 import {-@ HTF_TESTS @-} Uniform.HttpURI_test
 
 main =  do

@@ -25,12 +25,13 @@
 module Uniform.HttpURI (
     module Uniform.HttpURI
     , module Uniform.Zero
+    , module Uniform.Strings
 --    , module Network.URI
             )  where
 
 
-import           Uniform.Error
-import           Uniform.Strings
+import           Uniform.Error (errorT)
+import           Uniform.Strings -- (IsString (..), (</>), (<.>))
 import  Uniform.Zero
 --import Uniform.HttpCall
 --import Uniform.HttpCallWithConduit
@@ -67,11 +68,11 @@ parseAbsoluteURI :: Text -> Maybe URI
 parseAbsoluteURI t = fmap URI . N.parseAbsoluteURI . t2s $ t
 
 makeAbsURI :: Text -> URI
-makeAbsURI u = URI $ maybe (errorT ["makeURI in Producer.Servers", u])
+makeAbsURI u = URI $ maybe (errorT ["makeURI in LitTypes.ServerNames", u])
                 id
                 (N.parseAbsoluteURI . t2s   $ u)
 makeURI :: Text -> URI
-makeURI u = URI $ maybe (errorT ["makeURI in Producer.Servers", u])
+makeURI u = URI $ maybe (errorT ["makeURI in LitTypes.ServerNamess", u])
                 id
                 (N.parseURI . t2s $ u)
 

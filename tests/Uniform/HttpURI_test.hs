@@ -23,7 +23,7 @@ module Uniform.HttpURI_test where
 
 
 import           Uniform.Error
-import           Uniform.Strings
+--import           Uniform.Strings
 --import Uniform.HttpCall
 --import Uniform.HttpCallWithConduit
 --import Network.URI

@@ -1,7 +1,7 @@
 
  -----------------------------------------------------------------------------
 --
--- Module      :  Uniform.HttpCallWithConduit
+-- Module      :  Uniform.HttpCall
 --
 -- | using http simple to sparql queries and to create requests
 -- part of uniform (to use only text
@@ -21,9 +21,10 @@
 {-# LANGUAGE UndecidableInstances  #-}
 -- {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
-module Uniform.HttpCallWithConduit (
-    module Uniform.HttpCallWithConduit
+module Uniform.HttpCall (
+    module Uniform.HttpCall
     , Http.Request
+    , module Uniform.Error
 --    , Http.parseRequest, Http.parseRequest_
 --    , HttpQueryString
     , module Uniform.HttpURI
@@ -31,7 +32,7 @@ module Uniform.HttpCallWithConduit (
             )  where
 
 import           Uniform.Error
-import           Uniform.Strings
+--import           Uniform.Strings
 --
 import     qualified      Network.HTTP.Simple          as Http
 --import     qualified      Network.HTTP.Client          as Client
