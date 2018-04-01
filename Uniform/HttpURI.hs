@@ -5,6 +5,7 @@
 --
 -- | using http simple to sparql queries and to create requests
 -- part of uniform (to use only text
+-- wraps URI in URI
 
 -----------------------------------------------------------------------------
 --{-# OPTIONS_GHC -F -pgmF htfpp #-}
@@ -18,7 +19,9 @@
 {-# LANGUAGE TypeSynonymInstances  #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# LANGUAGE StandaloneDeriving
---    , GeneralizedNewtypeDeriving
+    , GeneralizedNewtypeDeriving
+    , DeriveGeneric
+    , DeriveAnyClass
       #-}
 -- {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
@@ -48,18 +51,22 @@ localhostTextFile = "http://www.gerastree.at/testaf1" :: Text
 -- parseRequest_  does not throw useful exception
 -- for the conduit based http
 
-newtype HttpVarParams = HttpVarParams [(Text,Maybe Text)] deriving (Show, Read, Eq )
+newtype HttpVarParams = HttpVarParams [(Text, Maybe Text)]
+    deriving (Show, Read, Eq, Generic, Zeros)
 unHttpVarParams (HttpVarParams p) = p
 
-instance Zeros HttpVarParams where zero = HttpVarParams []
+--instance Zeros HttpVarParams where zero = HttpVarParams []
+-- unclear why automatic derivation does not work
 
 combineHttpVarParams :: HttpVarParams -> HttpVarParams -> HttpVarParams
 combineHttpVarParams p1 p2 = HttpVarParams (p11 ++ p22)
         where   p11 = unHttpVarParams p1
                 p22 = unHttpVarParams p2
 
-newtype URI = URI N.URI  deriving (Eq)
+newtype URI = URI N.URI  deriving (Eq, Generic)
 un2 (URI u) = u   -- to remove the newtype level
+instance Zeros URI where
+    zero = makeURI ""
 
 parseURI :: Text -> Maybe URI
 parseURI t = fmap URI . N.parseURI . t2s $ t
