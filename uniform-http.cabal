@@ -1,5 +1,5 @@
 name: uniform-http
-version: 0.0.2.3
+version: 0.0.2.4
 cabal-version: >=1.22
 build-type: Simple
 license: GPL
