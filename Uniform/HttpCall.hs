@@ -15,15 +15,24 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE ScopedTypeVariables, DeriveGeneric, DeriveAnyClass,
+  RecordWildCards #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
 {-# LANGUAGE UndecidableInstances  #-}
 -- {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
-module Uniform.HttpCall (
-    module Uniform.HttpCall
-    , Http.Request
+
+module Uniform.HttpCall (TimeOutSec, mkTimeOut, mkTimeOutDefault
+        , mkServerURI 
+        , URI, HttpVarParams
+        , mkAppType, AppType 
+    , callHTTP10post
+    , mkHttpPath, HttpPath
+    , mkHttpVarParams, HttpVarParams 
+
+    -- module Uniform.HttpCall
+    -- , Http.Request
     , module Uniform.Error
     , module Uniform.HttpURI
             )  where
@@ -34,6 +43,7 @@ import     qualified      Network.HTTP.Conduit         as Conduit
 
 import Data.Text (take)
 import Uniform.HttpURI
+import GHC.Generics
 
 makeRequest :: URI -> ErrIO Conduit.Request
 makeRequest dest = Http.parseRequest . t2s . uriT $ dest
@@ -45,23 +55,25 @@ makeRequest dest = Http.parseRequest . t2s . uriT $ dest
 -- callHTTP8post debug appType dest path txt =
 --     callHTTP9post debug appType dest path (b2bl . t2b $ txt)
 
-callHTTP9post :: Bool -> Text -> URI -> Text -> LazyByteString -> ErrIO Text
--- post a body to the  url given as a type given
---application/sparql-update
-callHTTP9post debug appType dest path txt = do
-    callHTTP10post debug appType dest path txt zero Nothing
+-- callHTTP9post :: Bool -> Text -> URI -> Text -> LazyByteString -> ErrIO Text
+-- -- post a body to the  url given as a type given
+-- --application/sparql-update
+-- callHTTP9post debug appType dest path txt = do
+--     callHTTP10post debug appType dest path txt zero Nothing
 
-callHTTP10post :: Bool -> Text -> URI -> Text -> LazyByteString
-                    -> HttpVarParams -> Maybe Int -> ErrIO Text
+
+
+callHTTP10post :: Bool -> AppType -> ServerURI -> HttpPath -> LazyByteString
+                    -> HttpVarParams -> TimeOutSec -> ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
 -- timeout in seconds - will be converted, nothing gives default
     -- URI not text for destination
-callHTTP10post debug appType dest path txt vars timeout = do
+callHTTP10post debug (AppType apptype) (ServerURI dest) (HttpPath path) txt vars (TimeOutSec timeout) = do
     req1 <- makeRequest dest
 --    let length = lengthChar . b2s . bl2b $ txt
     let req2 = Http.setRequestBodyLBS txt -- (b2bl . t2b $ txt)
-                $ Http.setRequestHeader "Content-Type" [t2b appType]
+                $ Http.setRequestHeader "Content-Type" [t2b apptype]
                 $ Http.setRequestMethod "POST"
                 $ Http.setRequestPath (t2b path)
                 $ Http.setRequestQueryString (map formatQuery

@@ -26,6 +26,8 @@
 -- {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
 module Uniform.HttpURI (
+        -- TimeOutSec, mkTimeOut, mkTimeOutDefault
+        -- , URI, HttpVarParams
     module Uniform.HttpURI
     , module Uniform.Zero
     , module Uniform.Strings
@@ -38,11 +40,34 @@ import           Uniform.Strings -- (IsString (..), (</>), (<.>))
 import  Uniform.Zero
 import qualified Network.URI as N
 
+-- a server URI (not including the port, but absolute)
+newtype ServerURI = ServerURI {unServerURI :: URI}
+                deriving (Show, Read, Eq, Ord, Generic, Zeros)
+mkServerURI :: Text -> ServerURI 
+mkServerURI = ServerURI . makeAbsURI 
 
+-- | a type for the application path when calling Http 
+newtype HttpPath = HttpPath Text 
+    deriving (Show, Read, Eq, Ord, Generic, Zeros)
+mkHttpPath = HttpPath    -- could check for acceptance here? 
+
+
+-- | a timeout in seconds 
+newtype TimeOutSec = TimeOutSec (Maybe Int)
+    deriving (Eq, Ord, Show, Read, Generic, Zeros)
+mkTimeOut i = TimeOutSec (Just i)
+mkTimeOutDefault = TimeOutSec Nothing
+
+-- | a special type for the app type argumetn 
+newtype AppType = AppType Text 
+    deriving (Eq, Ord, Show, Read, Generic, Zeros)
+mkAppType = AppType 
+
+-- | the type for the paramter key - value pairs 
 newtype HttpVarParams = HttpVarParams [(Text, Maybe Text)]
     deriving (Show, Read, Eq, Generic, Zeros)
 unHttpVarParams (HttpVarParams p) = p
-
+mkHttpVarParams = HttpVarParams 
 --instance Zeros HttpVarParams where zero = HttpVarParams []
 -- unclear why automatic derivation does not work
 
@@ -51,7 +76,7 @@ combineHttpVarParams p1 p2 = HttpVarParams (p11 ++ p22)
         where   p11 = unHttpVarParams p1
                 p22 = unHttpVarParams p2
 
-newtype URI = URI N.URI  deriving (Eq, Generic)
+newtype URI = URI N.URI  deriving (Eq, Ord, Generic)
 un2 (URI u) = u   -- to remove the newtype level
 instance Zeros URI where
     zero = makeURI ""
@@ -88,7 +113,7 @@ uriS u =  N.uriToString defaultUserInfoMap (un2 u) $ ""
 
 -- copied
 defaultUserInfoMap :: String -> String
-defaultUserInfoMap uinf = user++newpass
+defaultUserInfoMap uinf = user ++ newpass
     where
         (user,pass) = break (==':') uinf
         newpass     = if null pass || (pass == "@")
