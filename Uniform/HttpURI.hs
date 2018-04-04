@@ -36,20 +36,8 @@ module Uniform.HttpURI (
 import           Uniform.Error (errorT)
 import           Uniform.Strings -- (IsString (..), (</>), (<.>))
 import  Uniform.Zero
---import Uniform.HttpCall
---import Uniform.HttpCallWithConduit
 import qualified Network.URI as N
---import           Test.Framework
---
---deriving instance Read URI
---deriving instance Read URIAuth
 
---instance IsString URI where
---    fromString s = read s
-
-localhostTextFile = "http://www.gerastree.at/testaf1" :: Text
--- parseRequest_  does not throw useful exception
--- for the conduit based http
 
 newtype HttpVarParams = HttpVarParams [(Text, Maybe Text)]
     deriving (Show, Read, Eq, Generic, Zeros)
