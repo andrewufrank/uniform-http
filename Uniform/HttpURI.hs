@@ -100,9 +100,12 @@ addToURI :: URI -> Text -> URI
 -- add a text at end to an URI
 addToURI u t =    makeURI $ (uriT u) </> t
 
+newtype PortNumber = PortNumber Int 
+    deriving (Eq, Ord, Show, Read, Generic, Zeros)
+mkPortNumber = PortNumber 
 
-addPort2URI :: URI -> Int -> URI
-addPort2URI u i = makeURI (uriT u <:> showT i)
+addPort2ServerURI :: ServerURI -> PortNumber -> ServerURI
+addPort2ServerURI (ServerURI u) (PortNumber i) = mkServerURI (uriT u <:> showT i)
 
 uriT :: URI -> Text
 -- ^ convert an uri to a text (but not a show instance with "")

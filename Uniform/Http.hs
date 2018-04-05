@@ -22,7 +22,7 @@
 {-# LANGUAGE UndecidableInstances  #-}
 
 module Uniform.Http (TimeOutSec, mkTimeOut, mkTimeOutDefault
-        , mkServerURI, ServerURI
+        , mkServerURI, ServerURI, addPort2ServerURI, PortNumber, mkPortNumber
         , URI, HttpVarParams
         , uriT  -- required? 
         , mkAppType, AppType 
