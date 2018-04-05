@@ -24,8 +24,9 @@
 
 
 module Uniform.HttpCall (TimeOutSec, mkTimeOut, mkTimeOutDefault
-        , mkServerURI 
+        , mkServerURI, ServerURI
         , URI, HttpVarParams
+        , uriT
         , mkAppType, AppType 
     , callHTTP10post
     , mkHttpPath, HttpPath
@@ -34,7 +35,7 @@ module Uniform.HttpCall (TimeOutSec, mkTimeOut, mkTimeOutDefault
     -- module Uniform.HttpCall
     -- , Http.Request
     , module Uniform.Error
-    , module Uniform.HttpURI
+    -- , module Uniform.HttpURI
             )  where
 
 import           Uniform.Error

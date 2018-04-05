@@ -36,7 +36,7 @@ module Uniform.HttpURI (
 
 
 import           Uniform.Error (errorT)
-import           Uniform.Strings -- (IsString (..), (</>), (<.>))
+import           Uniform.Strings -- (IsString (..), (</>), (<.>)) 
 import  Uniform.Zero
 import qualified Network.URI as N
 
