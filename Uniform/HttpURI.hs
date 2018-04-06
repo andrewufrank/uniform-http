@@ -27,7 +27,7 @@
 
 module Uniform.HttpURI (
         -- TimeOutSec, mkTimeOut, mkTimeOutDefault
-        -- , URI, HttpVarParams
+        -- , URI, HttpQueryParams
     module Uniform.HttpURI
     , module Uniform.Zero
     , module Uniform.Strings
@@ -47,6 +47,7 @@ mkServerURI :: Text -> ServerURI
 mkServerURI = ServerURI . makeAbsURI 
 
 -- | a type for the application path when calling Http 
+-- after the URI till the ? (starts with /)
 newtype HttpPath = HttpPath Text 
     deriving (Show, Read, Eq, Ord, Generic, Zeros)
 mkHttpPath = HttpPath    -- could check for acceptance here? 
@@ -63,18 +64,18 @@ newtype AppType = AppType Text
     deriving (Eq, Ord, Show, Read, Generic, Zeros)
 mkAppType = AppType 
 
--- | the type for the paramter key - value pairs 
-newtype HttpVarParams = HttpVarParams [(Text, Maybe Text)]
+-- | the type for the paramter key - value pairs, comes after the ? 
+newtype HttpQueryParams = HttpQueryParams [(Text, Maybe Text)]
     deriving (Show, Read, Eq, Generic, Zeros)
-unHttpVarParams (HttpVarParams p) = p
-mkHttpVarParams = HttpVarParams 
---instance Zeros HttpVarParams where zero = HttpVarParams []
+unHttpQueryParams (HttpQueryParams p) = p
+mkHttpQueryParams = HttpQueryParams 
+--instance Zeros HttpQueryParams where zero = HttpQueryParams []
 -- unclear why automatic derivation does not work
 
-combineHttpVarParams :: HttpVarParams -> HttpVarParams -> HttpVarParams
-combineHttpVarParams p1 p2 = HttpVarParams (p11 ++ p22)
-        where   p11 = unHttpVarParams p1
-                p22 = unHttpVarParams p2
+combineHttpQueryParams :: HttpQueryParams -> HttpQueryParams -> HttpQueryParams
+combineHttpQueryParams p1 p2 = HttpQueryParams (p11 ++ p22)
+        where   p11 = unHttpQueryParams p1
+                p22 = unHttpQueryParams p2
 
 newtype URI = URI N.URI  deriving (Eq, Ord, Generic)
 un2 (URI u) = u   -- to remove the newtype level

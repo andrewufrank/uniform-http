@@ -23,19 +23,8 @@
 -- {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
 
-module Uniform.HttpCall (TimeOutSec, mkTimeOut, mkTimeOutDefault
-        , mkServerURI, ServerURI
-        , URI, HttpVarParams
-        , uriT
-        , mkAppType, AppType 
-    , callHTTP10post
-    , mkHttpPath, HttpPath
-    , mkHttpVarParams, HttpVarParams 
-
-    -- module Uniform.HttpCall
-    -- , Http.Request
+module Uniform.HttpCall (module Uniform.HttpCall
     , module Uniform.Error
-    -- , module Uniform.HttpURI
             )  where
 
 import           Uniform.Error
@@ -50,22 +39,10 @@ makeRequest :: URI -> ErrIO Conduit.Request
 makeRequest dest = Http.parseRequest . t2s . uriT $ dest
 
 
--- callHTTfiP8pFost :: Bool -> Text -> URI -> Text -> Text -> ErrIO Text
--- -- post a body to the  url given as a type given
--- --application/sparql-update
--- callHTTP8post debug appType dest path txt =
---     callHTTP9post debug appType dest path (b2bl . t2b $ txt)
-
--- callHTTP9post :: Bool -> Text -> URI -> Text -> LazyByteString -> ErrIO Text
--- -- post a body to the  url given as a type given
--- --application/sparql-update
--- callHTTP9post debug appType dest path txt = do
---     callHTTP10post debug appType dest path txt zero Nothing
-
 
 
 callHTTP10post :: Bool -> AppType -> ServerURI -> HttpPath -> LazyByteString
-                    -> HttpVarParams -> TimeOutSec -> ErrIO Text
+                    -> HttpQueryParams -> TimeOutSec -> ErrIO Text
 -- post a body to the  url given as a type given
 --application/sparql-update
 -- timeout in seconds - will be converted, nothing gives default
@@ -78,7 +55,7 @@ callHTTP10post debug (AppType apptype) (ServerURI dest) (HttpPath path) txt vars
                 $ Http.setRequestMethod "POST"
                 $ Http.setRequestPath (t2b path)
                 $ Http.setRequestQueryString (map formatQuery
-                        . unHttpVarParams $ vars)
+                        . unHttpQueryParams $ vars)
                 req1
                     {Conduit.responseTimeout =
                             maybe Conduit.responseTimeoutNone
@@ -107,7 +84,7 @@ callHTTP10post debug (AppType apptype) (ServerURI dest) (HttpPath path) txt vars
 
 -- -- TODO merge the post7 and post9
 -- -- post7 has a query paramter with
--- makeHttpPost7 :: Bool ->  URI -> Text -> HttpVarParams -> Text -> Text ->  ErrIO Text
+-- makeHttpPost7 :: Bool ->  URI -> Text -> HttpQueryParams -> Text -> Text ->  ErrIO Text
 -- -- post a body to the  url given as a type given
 -- --application/sparql-update
 -- -- path is query .. or something which is type,value pairs
@@ -120,7 +97,7 @@ callHTTP10post debug (AppType apptype) (ServerURI dest) (HttpPath path) txt vars
 formatQuery :: (Text, Maybe Text) -> (ByteString, Maybe ByteString)
 formatQuery (a, mb) = (t2b a, fmap t2b mb)
 --
--- makeHttpPost7x  :: Bool ->  URI -> Text -> HttpVarParams -> Text -> Text ->  ErrIO Text
+-- makeHttpPost7x  :: Bool ->  URI -> Text -> HttpQueryParams -> Text -> Text ->  ErrIO Text
 -- -- post a body to the  url given as a type given
 -- --application/sparql-update
 -- -- path is query .. or something which is type,value pairs
@@ -132,7 +109,7 @@ formatQuery (a, mb) = (t2b a, fmap t2b mb)
 --                 $ Http.setRequestMethod "POST"
 --                 $ Http.setRequestPath (t2b path)
 --                 $ Http.setRequestQueryString
---                             (map formatQuery . unHttpVarParams $ vars)
+--                             (map formatQuery . unHttpQueryParams $ vars)
 -- --                $ Conduit.ResponseTimeout 300000 -- msecs
 --                 req1
 --                     {Conduit.responseTimeout = Conduit.responseTimeoutMicro 300000000}
