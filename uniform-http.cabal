@@ -1,5 +1,5 @@
 name: uniform-http
-version: 0.0.2.4
+version: 0.0.2.5
 cabal-version: >=1.22
 build-type: Simple
 license: GPL
@@ -33,13 +33,15 @@ library
 
     exposed-modules:
             Uniform.Http
+            -- the next two must not be imported
+            -- except for testing here
+             Uniform.HttpCall
+             Uniform.HttpURI
     exposed: True
     buildable: True
     default-language: Haskell2010
     hs-source-dirs: .
     other-modules:
-             Uniform.HttpCall
-             Uniform.HttpURI
 
 Test-Suite httpTestAuto
     type:       exitcode-stdio-1.0
@@ -49,13 +51,17 @@ Test-Suite httpTestAuto
         , uniform-strings
         , uniform-error
         , uniform-http
+--        -- needed because the two files
+
+            , uniform-algebras
+            , network-uri
 -- for tests
             , HTF
             , test-invariant
     default-language: Haskell2010
-    hs-source-dirs: tests, .
+    hs-source-dirs: tests
     other-modules:
                  Uniform.HttpCall_test
                  Uniform.HttpURI_test
-             Uniform.HttpCall
-             Uniform.HttpURI
+--             Uniform.HttpCall
+--             Uniform.HttpURI

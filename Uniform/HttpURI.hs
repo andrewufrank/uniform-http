@@ -36,8 +36,8 @@ module Uniform.HttpURI (
 
 
 import           Uniform.Error (errorT)
+import           Uniform.Zero
 import           Uniform.Strings -- (IsString (..), (</>), (<.>))
-import  Uniform.Zero
 import qualified Network.URI as N
 
 -- a server URI (not including the port, but absolute)
@@ -56,7 +56,7 @@ mkHttpPath = HttpPath    -- could check for acceptance here?
 -- | a timeout in seconds
 newtype TimeOutSec = TimeOutSec (Maybe Int)
     deriving (Eq, Ord, Show, Read, Generic, Zeros)
-mkTimeOut i = TimeOutSec (Just i)
+mkTimeOutSec i = TimeOutSec (Just i)
 mkTimeOutDefault = TimeOutSec Nothing
 
 -- | a special type for the app type argumetn
