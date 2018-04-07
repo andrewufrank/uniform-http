@@ -47,7 +47,8 @@ callHTTP10post :: Bool -> AppType -> ServerURI -> HttpPath -> LazyByteString
 --application/sparql-update
 -- timeout in seconds - will be converted, nothing gives default
     -- URI not text for destination
-callHTTP10post debug (AppType apptype) (ServerURI dest) (HttpPath path) txt vars (TimeOutSec timeout) = do
+callHTTP10post debug (AppType apptype) (ServerURI dest) (HttpPath path)
+                     txt vars (TimeOutSec timeout) = do
     req1 <- makeRequest dest
 --    let length = lengthChar . b2s . bl2b $ txt
     let req2 = Http.setRequestBodyLBS txt -- (b2bl . t2b $ txt)
@@ -84,7 +85,8 @@ callHTTP10post debug (AppType apptype) (ServerURI dest) (HttpPath path) txt vars
 
 -- -- TODO merge the post7 and post9
 -- -- post7 has a query paramter with
--- makeHttpPost7 :: Bool ->  URI -> Text -> HttpQueryParams -> Text -> Text ->  ErrIO Text
+-- makeHttpPost7 :: Bool ->  URI -> Text -> HttpQueryParams
+-- -> Text -> Text ->  ErrIO Text
 -- -- post a body to the  url given as a type given
 -- --application/sparql-update
 -- -- path is query .. or something which is type,value pairs
@@ -97,7 +99,8 @@ callHTTP10post debug (AppType apptype) (ServerURI dest) (HttpPath path) txt vars
 formatQuery :: (Text, Maybe Text) -> (ByteString, Maybe ByteString)
 formatQuery (a, mb) = (t2b a, fmap t2b mb)
 --
--- makeHttpPost7x  :: Bool ->  URI -> Text -> HttpQueryParams -> Text -> Text ->  ErrIO Text
+-- makeHttpPost7x  :: Bool ->  URI -> Text ->
+--  HttpQueryParams -> Text -> Text ->  ErrIO Text
 -- -- post a body to the  url given as a type given
 -- --application/sparql-update
 -- -- path is query .. or something which is type,value pairs

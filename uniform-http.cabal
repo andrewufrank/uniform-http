@@ -10,10 +10,11 @@ category: Data, Text, Uniform
 synopsis: uniform text based operations to call http
 description: http using text
     0.0.2.3 added HttpVarParams
+    0.0.2.4 change structure to export as Http
 
 source-repository head
     type: git
-    location: https://github.com/andrewufrank/uniform-fileio.git
+    location: https://github.com/andrewufrank/uniform-http.git
 
 library
     build-depends: base
@@ -29,6 +30,7 @@ library
             , uniform-error
             , uniform-algebras
 
+
     exposed-modules:
             Uniform.Http
     exposed: True
@@ -39,7 +41,7 @@ library
              Uniform.HttpCall
              Uniform.HttpURI
 
-Test-Suite fileioTestAuto
+Test-Suite httpTestAuto
     type:       exitcode-stdio-1.0
     main-is:    TestMain.hs
     build-depends: base, HTF
@@ -51,7 +53,9 @@ Test-Suite fileioTestAuto
             , HTF
             , test-invariant
     default-language: Haskell2010
-    hs-source-dirs: tests
+    hs-source-dirs: tests, .
     other-modules:
                  Uniform.HttpCall_test
-             Uniform.HttpURI_test
+                 Uniform.HttpURI_test
+             Uniform.HttpCall
+             Uniform.HttpURI

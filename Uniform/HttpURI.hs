@@ -36,39 +36,39 @@ module Uniform.HttpURI (
 
 
 import           Uniform.Error (errorT)
-import           Uniform.Strings -- (IsString (..), (</>), (<.>)) 
+import           Uniform.Strings -- (IsString (..), (</>), (<.>))
 import  Uniform.Zero
 import qualified Network.URI as N
 
 -- a server URI (not including the port, but absolute)
 newtype ServerURI = ServerURI {unServerURI :: URI}
                 deriving (Show, Read, Eq, Ord, Generic, Zeros)
-mkServerURI :: Text -> ServerURI 
-mkServerURI = ServerURI . makeAbsURI 
+mkServerURI :: Text -> ServerURI
+mkServerURI = ServerURI . makeAbsURI
 
--- | a type for the application path when calling Http 
+-- | a type for the application path when calling Http
 -- after the URI till the ? (starts with /)
-newtype HttpPath = HttpPath Text 
+newtype HttpPath = HttpPath Text
     deriving (Show, Read, Eq, Ord, Generic, Zeros)
-mkHttpPath = HttpPath    -- could check for acceptance here? 
+mkHttpPath = HttpPath    -- could check for acceptance here?
 
 
--- | a timeout in seconds 
+-- | a timeout in seconds
 newtype TimeOutSec = TimeOutSec (Maybe Int)
     deriving (Eq, Ord, Show, Read, Generic, Zeros)
 mkTimeOut i = TimeOutSec (Just i)
 mkTimeOutDefault = TimeOutSec Nothing
 
--- | a special type for the app type argumetn 
-newtype AppType = AppType Text 
+-- | a special type for the app type argumetn
+newtype AppType = AppType Text
     deriving (Eq, Ord, Show, Read, Generic, Zeros)
-mkAppType = AppType 
+mkAppType = AppType
 
--- | the type for the paramter key - value pairs, comes after the ? 
+-- | the type for the paramter key - value pairs, comes after the ?
 newtype HttpQueryParams = HttpQueryParams [(Text, Maybe Text)]
     deriving (Show, Read, Eq, Generic, Zeros)
 unHttpQueryParams (HttpQueryParams p) = p
-mkHttpQueryParams = HttpQueryParams 
+mkHttpQueryParams = HttpQueryParams
 --instance Zeros HttpQueryParams where zero = HttpQueryParams []
 -- unclear why automatic derivation does not work
 
@@ -101,9 +101,9 @@ addToURI :: URI -> Text -> URI
 -- add a text at end to an URI
 addToURI u t =    makeURI $ (uriT u) </> t
 
-newtype PortNumber = PortNumber Int 
+newtype PortNumber = PortNumber Int
     deriving (Eq, Ord, Show, Read, Generic, Zeros)
-mkPortNumber = PortNumber 
+mkPortNumber = PortNumber
 
 addPort2ServerURI :: ServerURI -> PortNumber -> ServerURI
 addPort2ServerURI (ServerURI u) (PortNumber i) = mkServerURI (uriT u <:> showT i)

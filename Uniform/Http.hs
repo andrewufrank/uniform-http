@@ -21,12 +21,13 @@
 {-# LANGUAGE TypeSynonymInstances  #-}
 {-# LANGUAGE UndecidableInstances  #-}
 
-module Uniform.Http (TimeOutSec, mkTimeOut, mkTimeOutDefault
-        , mkServerURI, ServerURI, addPort2ServerURI, PortNumber, mkPortNumber
-        , URI
-        -- , uriT  -- required?
-        , mkAppType, AppType
-    , callHTTP10post, post2store
+module Uniform.Http (
+      TimeOutSec, mkTimeOut, mkTimeOutDefault
+    , mkServerURI, ServerURI, addPort2ServerURI, PortNumber, mkPortNumber
+    , URI
+    -- , uriT  -- required?
+    , mkAppType, AppType
+    , callHTTP10post
     , mkHttpPath, HttpPath   -- from / to ?
     , mkHttpQueryParams, HttpQueryParams  -- after the ?
     , module Uniform.Error
