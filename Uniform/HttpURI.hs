@@ -52,7 +52,6 @@ newtype HttpPath = HttpPath Text
     deriving (Show, Read, Eq, Ord, Generic, Zeros)
 mkHttpPath = HttpPath    -- could check for acceptance here?
 
-
 -- | a timeout in seconds
 newtype TimeOutSec = TimeOutSec (Maybe Int)
     deriving (Eq, Ord, Show, Read, Generic, Zeros)
